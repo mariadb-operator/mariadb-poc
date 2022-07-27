@@ -1,0 +1,16 @@
+[mysqld]
+bind-address=0.0.0.0
+default_storage_engine=InnoDB
+binlog_format=row
+innodb_autoinc_lock_mode=2
+
+# Galera cluster configuration
+wsrep_on=ON
+wsrep_provider=/usr/lib/galera/libgalera_smm.so
+wsrep_cluster_address="gcomm://mariadb-0,mariadb-1"
+wsrep_cluster_name="mariadb-galera-cluster"
+wsrep_sst_method=rsync
+
+# Cluster node configuration
+wsrep_node_address="mariadb-1"
+wsrep_node_name="mariadb-1"
