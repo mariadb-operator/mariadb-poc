@@ -23,7 +23,6 @@ services:
       - "4567"
       - "4568"
     volumes:
-      - ./config/mariadb-0-galera.cnf:/etc/mysql/mariadb.conf.d/galera.cnf
       - ./scripts:/scripts
   mariadb-1:
     container_name: mariadb-1
@@ -46,5 +45,4 @@ services:
       - "4567"
       - "4568"
     volumes:
-      - ./config/mariadb-1-galera.cnf:/etc/mysql/mariadb.conf.d/galera.cnf
       - ./scripts:/scripts
