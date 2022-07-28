@@ -4,9 +4,13 @@ services:
   mariadb-0:
     container_name: mariadb-0
     image: mariadb:10.7.4
-    command: "--wsrep-new-cluster"
+    command:
+      - bash
+      - -c
+      - /scripts/start.sh
     restart: unless-stopped
     environment:
+      - HOSTNAME=mariadb-0
       - MYSQL_TCP_PORT=3306
       - MARIADB_ROOT_PASSWORD=mariadb
       - MARIADB_DATABASE=mariadb
@@ -20,11 +24,17 @@ services:
       - "4568"
     volumes:
       - ./config/mariadb-0-galera.cnf:/etc/mysql/mariadb.conf.d/galera.cnf
+      - ./scripts:/scripts
   mariadb-1:
     container_name: mariadb-1
     image: mariadb:10.7.4
+    command:
+      - bash
+      - -c
+      - /scripts/start.sh
     restart: unless-stopped
     environment:
+      - HOSTNAME=mariadb-1
       - MYSQL_TCP_PORT=3306
       - MARIADB_ROOT_PASSWORD=mariadb
       - MARIADB_DATABASE=mariadb
@@ -37,3 +47,4 @@ services:
       - "4568"
     volumes:
       - ./config/mariadb-1-galera.cnf:/etc/mysql/mariadb.conf.d/galera.cnf
+      - ./scripts:/scripts
