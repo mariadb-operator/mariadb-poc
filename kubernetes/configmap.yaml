@@ -9,11 +9,20 @@ data:
     set -e
 
     HOSTNAME=$(hostname)
-    INDEX=${HOSTNAME##*-}
-    GALERA_CONFIG_FILE=/etc/mysql/mariadb.conf.d/galera.cnf
-    GALERA_STATE_FILE=/var/lib/mysql/grastate.dat
+    STATEFULSET_INDEX=${HOSTNAME##*-}
     if [ -z "$ENTRYPOINT" ]; then
-        ENTRYPOINT="/usr/local/bin/docker-entrypoint.sh"
+      ENTRYPOINT="/usr/local/bin/docker-entrypoint.sh"
+    fi
+    if [ -z "$GALERA_CONFIG_FILE" ]; then
+      GALERA_CONFIG_FILE=/etc/mysql/mariadb.conf.d/galera.cnf
+    fi
+    if [ -z "$GALERA_STATE_FILE" ]; then 
+      GALERA_STATE_FILE=/var/lib/mysql/grastate.dat
+    fi
+    if [ "$STATEFULSET_INDEX" = "0" ]; then
+      WSREP_NEW_CLUSTER="ON"
+    else
+      WSREP_NEW_CLUSTER="OFF"
     fi
 
     # MariaDB Galera config file
@@ -25,15 +34,16 @@ data:
     innodb_autoinc_lock_mode=2
 
     # Galera cluster configuration
+    wsrep_new_cluster="$WSREP_NEW_CLUSTER"
     wsrep_on=ON
     wsrep_provider=/usr/lib/galera/libgalera_smm.so
-    wsrep_cluster_address="gcomm://mariadb-0.mariadb.default.svc.cluster.local,mariadb-1.mariadb.default.svc.cluster.local"
+    wsrep_cluster_address="gcomm://mariadb-0.mariadb-headless.default.svc.cluster.local,mariadb-1.mariadb-headless.default.svc.cluster.local,mariadb-2.mariadb-headless.default.svc.cluster.local"
     wsrep_cluster_name="mariadb-galera-cluster"
     wsrep_sst_method=rsync
 
     # Cluster node configuration
-    wsrep_node_address="${HOSTNAME}.mariadb.default.svc.cluster.local"
-    wsrep_node_name="${HOSTNAME}"
+    wsrep_node_address="$HOSTNAME.mariadb-headless.default.svc.cluster.local"
+    wsrep_node_name="$HOSTNAME"
     EOF
 
     # Bootstrap failed container
@@ -41,8 +51,4 @@ data:
       sed -i  "s/safe_to_bootstrap: 0/safe_to_bootstrap: 1/" "$GALERA_STATE_FILE" 
     fi
 
-    if [ "$INDEX" = "0" ]; then 
-        bash -c "$ENTRYPOINT mariadbd --wsrep-new-cluster"
-    else
-        bash -c "$ENTRYPOINT mariadbd"
-    fi
+    bash -c "$ENTRYPOINT mariadbd"

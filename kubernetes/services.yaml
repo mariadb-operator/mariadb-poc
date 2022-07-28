@@ -8,12 +8,28 @@ metadata:
   name: mariadb
 spec:
   type: ClusterIP
-  # see: https://galeracluster.com/library/documentation/firewall-settings.html
   ports:
     - name: mysql
       port: 3306
       protocol: TCP
       targetPort: 3306
+  selector:
+    app.kubernetes.io/component: database
+    app.kubernetes.io/instance: mariadb
+    app.kubernetes.io/name: mariadb
+---
+apiVersion: v1
+kind: Service
+metadata:
+  labels:
+    app.kubernetes.io/component: database
+    app.kubernetes.io/instance: mariadb
+    app.kubernetes.io/name: mariadb
+  name: mariadb-headless
+spec:
+  type: ClusterIP
+  # see: https://galeracluster.com/library/documentation/firewall-settings.html
+  ports:
     - name: cluster
       port: 4444
       protocol: TCP

@@ -7,13 +7,13 @@ metadata:
     app.kubernetes.io/name: mariadb
   name: mariadb
 spec:
-  replicas: 2
+  replicas: 3
   selector:
     matchLabels:
       app.kubernetes.io/component: database
       app.kubernetes.io/instance: mariadb
       app.kubernetes.io/name: mariadb
-  serviceName: mariadb
+  serviceName: mariadb-headless
   template:
     metadata:
       labels:
@@ -77,9 +77,9 @@ spec:
             - mountPath: /var/lib/mysql
               name: storage
             - mountPath: /scripts
-              name: startup-script
+              name: scripts
       volumes:
-        - name: startup-script
+        - name: scripts
           configMap:
             name: mariadb-scripts
             defaultMode: 0777
