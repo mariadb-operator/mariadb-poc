@@ -2,7 +2,6 @@
 
 set -e
 
-# TODO: use the 'hostname' command when migrating to Kubernetes
 if [ -z "$HOSTNAME" ]; then
   echo "HOSTNAME environment variable not set"
   exit 1

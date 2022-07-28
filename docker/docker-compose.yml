@@ -16,7 +16,6 @@ services:
       - MARIADB_DATABASE=mariadb
       - MARIADB_USER=mariadb
       - MARIADB_PASSWORD=mariadb
-    # see: https://galeracluster.com/library/documentation/firewall-settings.html
     ports:
       - "3306"
       - "4444"
