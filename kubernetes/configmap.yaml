@@ -10,19 +10,14 @@ data:
 
     HOSTNAME=$(hostname)
     STATEFULSET_INDEX=${HOSTNAME##*-}
-    if [ -z "$ENTRYPOINT" ]; then
+    GALERA_CONFIG_FILE=/etc/mysql/mariadb.conf.d/galera.cnf
+    GALERA_STATE_FILE=/var/lib/mysql/grastate.dat
+    if [ -z "$ENTRYPOINT" ]; then 
       ENTRYPOINT="/usr/local/bin/docker-entrypoint.sh"
     fi
-    if [ -z "$GALERA_CONFIG_FILE" ]; then
-      GALERA_CONFIG_FILE=/etc/mysql/mariadb.conf.d/galera.cnf
-    fi
-    if [ -z "$GALERA_STATE_FILE" ]; then 
-      GALERA_STATE_FILE=/var/lib/mysql/grastate.dat
-    fi
-    if [ "$STATEFULSET_INDEX" = "0" ]; then
+    WSREP_NEW_CLUSTER="OFF"
+    if [ "$STATEFULSET_INDEX" = "0" ] && [ -z "$(ls -A /var/lib/mysql)"  ]; then
       WSREP_NEW_CLUSTER="ON"
-    else
-      WSREP_NEW_CLUSTER="OFF"
     fi
 
     # MariaDB Galera config file
