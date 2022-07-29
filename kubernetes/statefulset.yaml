@@ -34,7 +34,7 @@ spec:
               value: mariadb
             - name: MARIADB_PASSWORD
               value: mariadb
-          image: mariadb:10.7.4
+          image: mariadb:10.8.3
           imagePullPolicy: IfNotPresent
           command:
             - bash

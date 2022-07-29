@@ -34,15 +34,16 @@ spec:
       port: 4444
       protocol: TCP
       targetPort: 4444
-    - name: inc-state
+    - name: ist
       port: 4567
       protocol: TCP
       targetPort: 4567
-    - name: state-snap
+    - name: sst
       port: 4568
       protocol: TCP
       targetPort: 4568
   clusterIP: None
+  publishNotReadyAddresses: true
   selector:
     app.kubernetes.io/component: database
     app.kubernetes.io/instance: mariadb
