@@ -12,12 +12,21 @@ data:
     STATEFULSET_INDEX=${HOSTNAME##*-}
     GALERA_CONFIG_FILE=/etc/mysql/mariadb.conf.d/galera.cnf
     GALERA_STATE_FILE=/var/lib/mysql/grastate.dat
+    
     if [ -z "$ENTRYPOINT" ]; then 
       ENTRYPOINT="/usr/local/bin/docker-entrypoint.sh"
     fi
+    
     WSREP_NEW_CLUSTER="OFF"
     if [ "$STATEFULSET_INDEX" = "0" ] && [ -z "$(ls -A /var/lib/mysql)"  ]; then
       WSREP_NEW_CLUSTER="ON"
+    fi
+    if [ "$BOOSTRAP_CLUSTER" ]; then
+      WSREP_NEW_CLUSTER="ON"
+    fi
+
+    if [ -z "$SAFE_TO_BOOTSTRAP" ]; then 
+      SAFE_TO_BOOTSTRAP=true
     fi
 
     # MariaDB Galera config file
@@ -46,8 +55,7 @@ data:
     # wsrep_sst_method="rsync"
     EOF
 
-    # Bootstrap failed container
-    if [ -f "$GALERA_STATE_FILE" ]; then 
+    if [ "$SAFE_TO_BOOTSTRAP" ] && [ -f "$GALERA_STATE_FILE" ]; then 
       sed -i  "s/safe_to_bootstrap: 0/safe_to_bootstrap: 1/" "$GALERA_STATE_FILE" 
     fi
 
