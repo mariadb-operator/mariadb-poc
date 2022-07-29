@@ -2,6 +2,11 @@
 
 set -e
 
+if [ -z "$MARIADB_ROOT_PASSWORD" ]; then
+    echo "Environment variable 'MARIADB_ROOT_PASSWORD' must be set."
+    exit 1
+fi
+
 HOSTNAME=$(hostname)
 STATEFULSET_INDEX=${HOSTNAME##*-}
 GALERA_CONFIG_FILE=/etc/mysql/mariadb.conf.d/galera.cnf
@@ -45,7 +50,7 @@ wsrep_node_name="$HOSTNAME"
 # SST: https://mariadb.com/kb/en/introduction-to-state-snapshot-transfers-ssts/ 
 wsrep-sst-donor="mariadb-0,mariadb-1,mariadb-2,"
 wsrep_sst_method="mariabackup"
-wsrep_sst_auth="root:mariadb"
+wsrep_sst_auth="root:$MARIADB_ROOT_PASSWORD"
 # wsrep_sst_method="rsync"
 EOF
 
