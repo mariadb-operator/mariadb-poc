@@ -7,7 +7,7 @@ services:
     command:
       - bash
       - -c
-      - /scripts/start.sh
+      - /scripts/run.sh
     restart: unless-stopped
     environment:
       - HOSTNAME=mariadb-0

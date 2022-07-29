@@ -39,7 +39,7 @@ spec:
           command:
             - bash
             - -c
-            - /scripts/start.sh
+            - /scripts/run.sh
           # livenessProbe:
           #   failureThreshold: 3
           #   initialDelaySeconds: 10
@@ -80,8 +80,8 @@ spec:
               name: scripts
       volumes:
         - name: scripts
-          configMap:
-            name: mariadb-scripts
+          secret:
+            secretName: mariadb-scripts
             defaultMode: 0777
   volumeClaimTemplates:
     - apiVersion: v1
