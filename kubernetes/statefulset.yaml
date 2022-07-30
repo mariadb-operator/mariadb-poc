@@ -45,23 +45,23 @@ spec:
               command:
                 - bash
                 - -c
-                - mysql -u root -${MARIADB_ROOT_PASSWORD} -e "SHOW STATUS WHERE variable_name = 'wsrep_ready';"
+                - mysql -u root -p${MARIADB_ROOT_PASSWORD} -e "SHOW STATUS WHERE variable_name = 'wsrep_ready';"
             initialDelaySeconds: 60
             periodSeconds: 10
             timeoutSeconds: 1
             successThreshold: 1
             failureThreshold: 3
-          # readinessProbe:
-          #   exec:
-          #     command:
-          #       - bash
-          #       - -c
-          #       - mysql -u root -${MARIADB_ROOT_PASSWORD} -e "SHOW STATUS WHERE variable_name = 'wsrep_ready';"
-          #   initialDelaySeconds: 60
-          #   periodSeconds: 10
-          #   timeoutSeconds: 1
-          #   successThreshold: 1
-          #   failureThreshold: 3
+          readinessProbe:
+            exec:
+              command:
+                - bash
+                - -c
+                - mysql -u root -p${MARIADB_ROOT_PASSWORD} -e "SHOW STATUS WHERE variable_name = 'wsrep_ready';"
+            initialDelaySeconds: 60
+            periodSeconds: 10
+            timeoutSeconds: 1
+            successThreshold: 1
+            failureThreshold: 3
           name: mariadb
           ports:
             - containerPort: 3306
