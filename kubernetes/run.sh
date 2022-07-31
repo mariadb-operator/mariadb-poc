@@ -28,6 +28,8 @@ if [ -z "$SAFE_TO_BOOTSTRAP" ]; then
     SAFE_TO_BOOTSTRAP=true
 fi
 
+GALERA_CLUSTER_ADDRESS="gcomm://mariadb-0.mariadb-headless.default.svc.cluster.local,mariadb-1.mariadb-headless.default.svc.cluster.local,mariadb-2.mariadb-headless.default.svc.cluster.local"
+
 # MariaDB Galera config file
 cat <<EOF | tee ${GALERA_CONFIG_FILE} 
 [mysqld]
@@ -40,7 +42,7 @@ innodb_autoinc_lock_mode=2
 wsrep_new_cluster="$WSREP_NEW_CLUSTER"
 wsrep_on=ON
 wsrep_provider=/usr/lib/galera/libgalera_smm.so
-wsrep_cluster_address="gcomm://mariadb-0.mariadb-headless.default.svc.cluster.local,mariadb-1.mariadb-headless.default.svc.cluster.local,mariadb-2.mariadb-headless.default.svc.cluster.local"
+wsrep_cluster_address="$GALERA_CLUSTER_ADDRESS"
 wsrep_cluster_name=galera
 wsrep_slave_threads=4
 
@@ -53,6 +55,10 @@ wsrep_sst_method="mariabackup"
 wsrep_sst_auth="root:$MARIADB_ROOT_PASSWORD"
 # wsrep_sst_method="rsync"
 EOF
+
+echo "GALERA STATE FILE ************"
+cat "$GALERA_STATE_FILE"
+echo "******************************"
 
 if [ "$SAFE_TO_BOOTSTRAP" ] && [ -f "$GALERA_STATE_FILE" ]; then 
     sed -i  "s/safe_to_bootstrap: 0/safe_to_bootstrap: 1/" "$GALERA_STATE_FILE" 
