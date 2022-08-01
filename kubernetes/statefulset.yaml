@@ -23,8 +23,35 @@ spec:
       name: mariadb
     spec:
       serviceAccountName: mariadb
+      initContainers:
+        - name: mariadb-init
+          image: nicolaka/netshoot:v0.7
+          imagePullPolicy: IfNotPresent
+          command:
+            - bash
+            - -c
+            - /scripts/init.sh
+          env:
+            - name: MARIADB_ROOT_PASSWORD
+              value: mariadb
+            - name: POD_NAMESPACE
+              valueFrom:
+                fieldRef:
+                  fieldPath: metadata.namespace
+            - name: CLUSTER
+              value: cluster.local
+          volumeMounts:
+            - mountPath: /etc/mysql
+              name: config
+            - mountPath: /var/lib/mysql
+              name: storage
+            - mountPath: /scripts
+              name: scripts
       containers:
-        - env:
+        - name: mariadb
+          image: mariadb:10.6.8
+          imagePullPolicy: IfNotPresent
+          env:
             - name: MYSQL_TCP_PORT
               value: "3306"
             - name: MARIADB_ROOT_PASSWORD
@@ -35,18 +62,6 @@ spec:
               value: mariadb
             - name: MARIADB_PASSWORD
               value: mariadb
-            - name: POD_NAMESPACE
-              valueFrom:
-                fieldRef:
-                  fieldPath: metadata.namespace
-            - name: CLUSTER
-              value: cluster.local
-          image: mariadb:10.6.8
-          imagePullPolicy: IfNotPresent
-          command:
-            - bash
-            - -c
-            - /scripts/run.sh
           livenessProbe:
             exec:
               command:
@@ -69,7 +84,6 @@ spec:
             timeoutSeconds: 1
             successThreshold: 1
             failureThreshold: 3
-          name: mariadb
           ports:
             - containerPort: 3306
               protocol: TCP
@@ -87,6 +101,8 @@ spec:
               cpu: 100m
               memory: 128Mi
           volumeMounts:
+            - mountPath: /etc/mysql
+              name: config
             - mountPath: /var/lib/mysql
               name: storage
             - mountPath: /scripts
@@ -96,6 +112,8 @@ spec:
           secret:
             secretName: mariadb-scripts
             defaultMode: 0777
+        - name: config
+          emptyDir: {}
   volumeClaimTemplates:
     - apiVersion: v1
       kind: PersistentVolumeClaim

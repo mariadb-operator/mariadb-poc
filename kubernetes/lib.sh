@@ -58,6 +58,7 @@ get_ready_pods_cluster_address() {
 
   GALERA_CLUSTER_ADDRESS="gcomm://"
 
+  # TODO: this is only valid in a 3 node cluster. Do it dynamically
   if [[ "${#PODS[@]}" -lt "2" ]]; then
     echo "$GALERA_CLUSTER_ADDRESS"
     return

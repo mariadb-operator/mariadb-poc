@@ -11,11 +11,8 @@ CURRENT_DIR="$( dirname "${BASH_SOURCE[0]}" )"
 
 source "$CURRENT_DIR/lib.sh"
 
-# Avoid having a custom Docker image and use the oficial one.
-# TODO: use a sidecar for reloading the config file and remove this
-apt update && apt install -y curl jq
-
-GALERA_CONFIG_FILE=/etc/mysql/mariadb.conf.d/galera.cnf
+GALERA_CONFIG_DIR=/etc/mysql/mariadb.conf.d
+GALERA_CONFIG_FILE="$GALERA_CONFIG_DIR/galera.cnf"
 GALERA_STATE_FILE=/var/lib/mysql/grastate.dat
 
 if [ -z "$ENTRYPOINT" ]; then 
@@ -26,6 +23,7 @@ if [ -z "$SAFE_TO_BOOTSTRAP" ]; then
 fi
 
 # MariaDB Galera config file
+mkdir -p $GALERA_CONFIG_DIR
 cat <<EOF | tee ${GALERA_CONFIG_FILE} 
 [mysqld]
 bind-address=0.0.0.0
@@ -53,5 +51,3 @@ EOF
 if [ "$SAFE_TO_BOOTSTRAP" ] && [ -f "$GALERA_STATE_FILE" ]; then 
     sed -i  "s/safe_to_bootstrap: 0/safe_to_bootstrap: 1/" "$GALERA_STATE_FILE" 
 fi
-
-bash -c "$ENTRYPOINT mariadbd"
