@@ -23,14 +23,14 @@ services:
       - "4567"
       - "4568"
     volumes:
-      - ./start.sh:/scripts/start.sh
+      - ./run.sh:/scripts/run.sh
   mariadb-1:
     container_name: mariadb-1
     image: mariadb:10.7.4
     command:
       - bash
       - -c
-      - /scripts/start.sh
+      - /scripts/run.sh
     restart: unless-stopped
     environment:
       - HOSTNAME=mariadb-1
@@ -45,4 +45,4 @@ services:
       - "4567"
       - "4568"
     volumes:
-      - ./start.sh:/scripts/start.sh
+      - ./run.sh:/scripts/run.sh
