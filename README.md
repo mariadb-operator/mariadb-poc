@@ -1,4 +1,2 @@
 # mariadb-galera-poc
-MariaDB Galera cluster setup
-- [docker](./docker)
-- [kubernetes](./kubernetes)
+MariaDB Galera cluster PoC setup in [Docker](./docker) and [Kubernetes](./kubernetes)
