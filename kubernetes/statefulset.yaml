@@ -23,6 +23,7 @@ spec:
       name: mariadb
     spec:
       serviceAccountName: mariadb
+      shareProcessNamespace: true
       initContainers:
         - name: mariadb-init
           image: nicolaka/netshoot:v0.7
@@ -48,6 +49,18 @@ spec:
             - mountPath: /scripts
               name: scripts
       containers:
+        - name: config-reloader-sidecar
+          image: mmontes11/config-reloader-sidecar:v0.0.1
+          env:
+            - name: CONFIG_DIR
+              value: /etc/mysql/mariadb.conf.d
+            - name: PROCESS_NAME
+              value: mariadbd
+            - name: RELOAD_SIGNAL
+              value: SIGTERM
+          volumeMounts:
+            - mountPath: /etc/mysql/mariadb.conf.d
+              name: config
         - name: mariadb
           image: mariadb:10.6.8
           imagePullPolicy: IfNotPresent
