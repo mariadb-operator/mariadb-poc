@@ -15,9 +15,6 @@ GALERA_CONFIG_DIR=/etc/mysql/mariadb.conf.d
 GALERA_CONFIG_FILE="$GALERA_CONFIG_DIR/galera.cnf"
 GALERA_STATE_FILE=/var/lib/mysql/grastate.dat
 
-if [ -z "$ENTRYPOINT" ]; then 
-    ENTRYPOINT="/usr/local/bin/docker-entrypoint.sh"
-fi
 if [ -z "$SAFE_TO_BOOTSTRAP" ]; then 
     SAFE_TO_BOOTSTRAP=true
 fi
