@@ -1,0 +1,77 @@
+apiVersion: apps/v1
+kind: StatefulSet
+metadata:
+  name: mariadb
+spec:
+  serviceName: mariadb
+  replicas: 3
+  podManagementPolicy: Parallel
+  selector:
+    matchLabels:
+      app: mariadb
+  template:
+    metadata:
+      labels:
+        app: mariadb
+    spec:
+      initContainers:
+        - name: init-repl
+          image: mariadb
+          imagePullPolicy: Always
+          command:
+            - bash
+            - -c
+            - /mnt/repl/initContainer.sh
+          volumeMounts:
+            - name: repl
+              mountPath: /mnt/repl
+            - name: config
+              mountPath: /etc/mysql/conf.d/
+            - name: initdb
+              mountPath: /docker-entrypoint-initdb.d
+      restartPolicy: Always
+      containers:
+        - name: mariadb
+          image: mariadb
+          ports:
+            - containerPort: 3306
+              protocol: TCP
+          env:
+            - name: MYSQL_TCP_PORT
+              value: "3306"
+            - name: MARIADB_ROOT_PASSWORD
+              value: mariadb
+            # Not compatible with replication:
+            #  Error 'Operation CREATE USER failed for 'mariadb'@'%'' on query. Default database: 'mysql'. Query: 'CREATE USER 'mariadb'@'%' IDENTIFIED BY 'mariadb''
+            # - name: MARIADB_DATABASE
+            #   value: mariadb
+            # - name: MARIADB_USER
+            #   value: mariadb
+            # - name: MARIADB_PASSWORD
+            #   value: mariadb
+            - name: MYSQL_INITDB_SKIP_TZINFO
+              value: "1"
+          volumeMounts:
+            - name: storage
+              mountPath: /var/lib/mysql
+            - name: config
+              mountPath: /etc/mysql/conf.d/
+            - name: initdb
+              mountPath: /docker-entrypoint-initdb.d
+      volumes:
+        - name: repl
+          secret:
+            secretName: mariadb-repl
+            defaultMode: 0777
+        - name: config
+          emptyDir: {}
+        - name: initdb
+          emptyDir: {}
+  volumeClaimTemplates:
+    - metadata:
+        name: storage
+      spec:
+        accessModes: ["ReadWriteOnce"]
+        resources:
+          requests:
+            storage: 300M
