@@ -40,6 +40,8 @@ spec:
               value: "3306"
             - name: MARIADB_ROOT_PASSWORD
               value: mariadb
+            # Not compatible with replication:
+            #  Error 'Operation CREATE USER failed for 'mariadb'@'%'' on query. Default database: 'mysql'. Query: 'CREATE USER 'mariadb'@'%' IDENTIFIED BY 'mariadb''
             # - name: MARIADB_DATABASE
             #   value: mariadb
             # - name: MARIADB_USER
