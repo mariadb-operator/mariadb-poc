@@ -40,12 +40,12 @@ spec:
               value: "3306"
             - name: MARIADB_ROOT_PASSWORD
               value: mariadb
-            - name: MARIADB_DATABASE
-              value: mariadb
-            - name: MARIADB_USER
-              value: mariadb
-            - name: MARIADB_PASSWORD
-              value: mariadb
+            # - name: MARIADB_DATABASE
+            #   value: mariadb
+            # - name: MARIADB_USER
+            #   value: mariadb
+            # - name: MARIADB_PASSWORD
+            #   value: mariadb
             - name: MYSQL_INITDB_SKIP_TZINFO
               value: "1"
           volumeMounts:
