@@ -1,3 +1,6 @@
 [mariadb]
 log-bin
 log-basename=mariadb
+rpl_semi_sync_master_enabled=ON
+rpl_semi_sync_master_timeout=20000
+rpl_semi_sync_master_wait_point=AFTER_SYNC

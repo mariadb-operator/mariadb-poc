@@ -1,3 +1,4 @@
 [mariadb]
-read_only
+read_only=1
 log-basename=mariadb
+rpl_semi_sync_slave_enabled=ON
