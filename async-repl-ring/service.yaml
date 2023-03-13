@@ -8,6 +8,7 @@ spec:
   ports:
     - port: 3306
       name: mariadb
+  # it works with a non headless service
   clusterIP: None
   selector:
     app: mariadb
