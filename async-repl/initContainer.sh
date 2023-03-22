@@ -4,7 +4,7 @@ set -ex
 echo 'Starting init-mariadb';
 ls /mnt/repl
 
-[[ `hostname` =~ -([0-9]+)$ ]] || exit 1
+[[ $HOSTNAME =~ -([0-9]+)$ ]] || exit 1
 ordinal=${BASH_REMATCH[1]}
 
 if [[ $ordinal -eq 0 ]]; then
