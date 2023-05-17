@@ -62,7 +62,7 @@ spec:
             - mountPath: /etc/mysql/mariadb.conf.d
               name: config
         - name: mariadb
-          image: mariadb:10.6.8
+          image: mariadb:10.11.3
           imagePullPolicy: IfNotPresent
           env:
             - name: MYSQL_TCP_PORT
