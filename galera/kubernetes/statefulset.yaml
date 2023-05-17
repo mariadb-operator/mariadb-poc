@@ -80,7 +80,7 @@ spec:
               command:
                 - bash
                 - -c
-                - mysql -u root -p${MARIADB_ROOT_PASSWORD} -e "SHOW STATUS WHERE variable_name = 'wsrep_ready';"
+                - mysql -u root -p${MARIADB_ROOT_PASSWORD} -e "SHOW STATUS LIKE 'wsrep_ready'" | grep -c ON
             initialDelaySeconds: 60
             periodSeconds: 10
             timeoutSeconds: 1
