@@ -14,6 +14,7 @@ spec:
       app.kubernetes.io/instance: mariadb
       app.kubernetes.io/name: mariadb
   serviceName: mariadb-headless
+  podManagementPolicy: Parallel
   template:
     metadata:
       labels:
@@ -24,6 +25,14 @@ spec:
     spec:
       serviceAccountName: mariadb
       shareProcessNamespace: true
+      affinity:
+        podAntiAffinity:
+          requiredDuringSchedulingIgnoredDuringExecution:
+            - topologyKey: "kubernetes.io/hostname"
+      tolerations:
+        - key: "mariadb.mmontes.io/ha"
+          operator: "Exists"
+          effect: "NoSchedule"
       initContainers:
         - name: mariadb-init
           image: nicolaka/netshoot:v0.7
@@ -61,6 +70,22 @@ spec:
           volumeMounts:
             - mountPath: /etc/mysql/mariadb.conf.d
               name: config
+        - name: agent
+          image: nicolaka/netshoot:v0.7
+          imagePullPolicy: IfNotPresent
+          command:
+            - sleep
+            - infinity
+          env:
+            - name: MYSQL_TCP_PORT
+              value: "3306"
+            - name: MARIADB_ROOT_PASSWORD
+              value: mariadb
+          volumeMounts:
+            - mountPath: /etc/mysql/mariadb.conf.d
+              name: config
+            - mountPath: /var/lib/mysql
+              name: storage
         - name: mariadb
           image: mariadb:10.11.3
           imagePullPolicy: IfNotPresent
@@ -69,6 +94,8 @@ spec:
               value: "3306"
             - name: MARIADB_ROOT_PASSWORD
               value: mariadb
+            - name: MARIADB_ROOT_HOST
+              value: "%"
             - name: MARIADB_DATABASE
               value: mariadb
             - name: MARIADB_USER
@@ -114,10 +141,10 @@ spec:
               cpu: 100m
               memory: 128Mi
           volumeMounts:
-            - mountPath: /etc/mysql/mariadb.conf.d
-              name: config
             - mountPath: /var/lib/mysql
               name: storage
+            - mountPath: /etc/mysql/mariadb.conf.d
+              name: config
             - mountPath: /scripts
               name: scripts
       volumes:
@@ -125,13 +152,22 @@ spec:
           secret:
             secretName: mariadb-scripts
             defaultMode: 0777
-        - name: config
-          emptyDir: {}
   volumeClaimTemplates:
     - apiVersion: v1
       kind: PersistentVolumeClaim
       metadata:
         name: storage
+      spec:
+        accessModes:
+          - ReadWriteOnce
+        resources:
+          requests:
+            storage: 100Mi
+        storageClassName: standard
+    - apiVersion: v1
+      kind: PersistentVolumeClaim
+      metadata:
+        name: config
       spec:
         accessModes:
           - ReadWriteOnce

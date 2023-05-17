@@ -12,7 +12,7 @@ CURRENT_DIR="$( dirname "${BASH_SOURCE[0]}" )"
 source "$CURRENT_DIR/lib.sh"
 
 GALERA_CONFIG_DIR=/etc/mysql/mariadb.conf.d
-GALERA_CONFIG_FILE="$GALERA_CONFIG_DIR/galera.cnf"
+GALERA_CONFIG_FILE="$GALERA_CONFIG_DIR/0-galera.cnf"
 GALERA_STATE_FILE=/var/lib/mysql/grastate.dat
 
 if [ -z "$SAFE_TO_BOOTSTRAP" ]; then 
@@ -44,7 +44,3 @@ wsrep_node_name="$HOSTNAME"
 wsrep_sst_method="mariabackup"
 wsrep_sst_auth="root:$MARIADB_ROOT_PASSWORD"
 EOF
-
-if [ "$SAFE_TO_BOOTSTRAP" ] && [ -f "$GALERA_STATE_FILE" ]; then 
-    sed -i  "s/safe_to_bootstrap: 0/safe_to_bootstrap: 1/" "$GALERA_STATE_FILE" 
-fi
