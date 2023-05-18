@@ -1,10 +1,7 @@
-# 1. vi /etc/mysql/mariadb.conf.d/1-galera.cnf (this file)
-# 2. recover and get seqno
 [mysqld]
 log_error=mariadb.err
 wsrep_recover="ON"
-# 3. bootstrap new cluster in the node with highest seqno
+# Bootstrap new cluster in the node with highest seqno
+# rm /etc/mysql/mariadb.conf.d/2-crashrecovery.cnf
 # sed -i  "s/safe_to_bootstrap: 0/safe_to_bootstrap: 1/" /var/lib/mysql/grastate.dat
-wsrep_new_cluster="ON"
-wsrep_cluster_address="gcomm://"
-# 4. rm /etc/mysql/mariadb.conf.d/1-galera.cnf (this file) after all nodes are ready
+# indclue 1-bootstrap.cnf 

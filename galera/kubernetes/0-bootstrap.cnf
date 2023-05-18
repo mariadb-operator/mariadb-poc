@@ -1,0 +1,5 @@
+[mysqld]
+wsrep_new_cluster="ON"
+# wsrep_cluster_address="gcomm://" # old way, but it can be set via sql
+# Remove after bootstrap
+# rm /etc/mysql/mariadb.conf.d/2-bootstrap.cnf

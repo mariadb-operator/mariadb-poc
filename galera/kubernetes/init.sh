@@ -29,7 +29,6 @@ binlog_format=row
 innodb_autoinc_lock_mode=2
 
 # Cluster configuration: https://galeracluster.com/library/documentation/mysql-wsrep-options.html
-wsrep_new_cluster="$(get_new_cluster)"
 wsrep_on=ON
 wsrep_provider=/usr/lib/galera/libgalera_smm.so
 wsrep_cluster_address="$(get_cluster_address)"
@@ -41,6 +40,6 @@ wsrep_node_address="$HOSTNAME.mariadb-headless.default.svc.cluster.local"
 wsrep_node_name="$HOSTNAME"
 
 # SST: https://mariadb.com/kb/en/introduction-to-state-snapshot-transfers-ssts/ 
-wsrep_sst_method="mariabackup"
-wsrep_sst_auth="root:$MARIADB_ROOT_PASSWORD"
+# wsrep_sst_method="mariabackup"
+# wsrep_sst_auth="root:$MARIADB_ROOT_PASSWORD"
 EOF
