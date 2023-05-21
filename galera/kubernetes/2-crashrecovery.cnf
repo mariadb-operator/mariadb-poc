@@ -1,4 +1,4 @@
-[mysqld]
+[galera]
 log_error=mariadb.err
 wsrep_recover="ON"
 # Bootstrap new cluster in the node with highest seqno

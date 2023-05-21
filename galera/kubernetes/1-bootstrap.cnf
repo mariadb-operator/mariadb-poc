@@ -1,4 +1,4 @@
-[mysqld]
+[galera]
 wsrep_new_cluster="ON"
 # wsrep_cluster_address="gcomm://" # old way, but it can be set via sql
 # Remove after bootstrap
