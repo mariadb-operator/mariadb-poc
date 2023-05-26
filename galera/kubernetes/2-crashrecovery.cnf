@@ -4,4 +4,4 @@ wsrep_recover="ON"
 # Bootstrap new cluster in the node with highest seqno
 # rm /etc/mysql/mariadb.conf.d/2-crashrecovery.cnf
 # sed -i  "s/safe_to_bootstrap: 0/safe_to_bootstrap: 1/" /var/lib/mysql/grastate.dat
-# indclue 1-bootstrap.cnf 
+# create 1-bootstrap.cnf 
