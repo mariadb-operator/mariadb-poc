@@ -1,0 +1,37 @@
+[user]
+mail = martin11lrx@gmail.com
+email = martin11lrx@gmail.com
+name = Martin Montes
+[alias]
+co = checkout
+ci = commit
+st = status
+br = branch
+hist = log --pretty=format:'%h %ad | %s%d [%an]' --graph --date=short
+sup = submodule update --recursive --init
+sre = submodule foreach --recursive git reset --hard
+scl = submodule foreach --recursive git clean -fd
+[github]
+user = mmontes11
+[credential]
+helper = store
+[core]
+excludesfile = ~/.gitignore
+editor = vi
+pager = delta
+[commit]
+template = ~/.gittemplate
+[interactive]
+diffFilter = delta --color-only
+[delta]
+navigate = true  # use n and N to move between diff sections
+line-numbers = true
+side-by-side = true
+syntax-theme = Nord
+[merge]
+conflictstyle = diff3
+[diff]
+colorMoved = default
+[pull]
+rebase = true
+ff = only
