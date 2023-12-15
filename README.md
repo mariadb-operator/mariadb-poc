@@ -1,5 +1,5 @@
-# 🦭 mariadb-ha-poc
-MariaDB High Availability Proofs of Concept.
+# 🦭 mariadb-poc
+MariaDB Proofs of Concept.
 
 ## [Asynchronous replication](./async-repl/)
 ![Asynchronous replication](https://mariadb.com/kb/en/replication-overview/+image/standard_replication)
