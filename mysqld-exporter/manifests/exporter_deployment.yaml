@@ -1,0 +1,44 @@
+apiVersion: apps/v1
+kind: Deployment
+metadata:
+  name: exporter
+spec:
+  selector:
+    matchLabels:
+      app: exporter
+  template:
+    metadata:
+      labels:
+        app: exporter
+    spec:
+      containers:
+        - name: exporter
+          image: prom/mysqld-exporter:v0.15.0
+          args:
+            - --config.my-cnf=/etc/cnf/exporter.cnf
+            - --log.level=debug
+          ports:
+            - containerPort: 9104
+          livenessProbe:
+            httpGet:
+              path: /
+              port: 9104
+          readinessProbe:
+            httpGet:
+              path: /
+              port: 9104
+          resources:
+            requests:
+              cpu: 50m
+              memory: 64Mi
+            limits:
+              cpu: 300m
+              memory: 512Mi
+          volumeMounts:
+            - name: config
+              mountPath: /etc/cnf/
+              readOnly: true
+      volumes:
+        - name: config
+          secret:
+            secretName: config

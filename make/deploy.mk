@@ -59,4 +59,8 @@ mariadb-config: ## Install MariaDB configuration.
 
 .PHONY: mariadb-repl
 mariadb-repl: mariadb-config ## Install MariaDB with asynchronous replication.
-	$(KUBECTL) apply -f $(ROOT_DIR)/hack/manifests/mariadb/mariadb-repl.yaml
+	$(KUBECTL) apply -f $(ROOT_DIR)/hack/manifests/mariadb/mariadb_repl.yaml
+
+.PHONY: mariadb-repl-min
+mariadb-repl-min: mariadb-config ## Install a minimal version of MariaDB with asynchronous replication.
+	$(KUBECTL) apply -f $(ROOT_DIR)/hack/manifests/mariadb/mariadb_repl_min.yaml
