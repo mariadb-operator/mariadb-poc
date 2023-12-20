@@ -5,11 +5,13 @@ metadata:
 spec:
   selector:
     matchLabels:
-      app: exporter
+      app.kubernetes.io/instance: exporter
+      app.kubernetes.io/name: exporter
   template:
     metadata:
       labels:
-        app: exporter
+        app.kubernetes.io/instance: exporter
+        app.kubernetes.io/name: exporter
     spec:
       containers:
         - name: exporter

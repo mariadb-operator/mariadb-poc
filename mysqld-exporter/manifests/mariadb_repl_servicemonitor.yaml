@@ -1,0 +1,69 @@
+apiVersion: monitoring.coreos.com/v1
+kind: ServiceMonitor
+metadata:
+  name: mariadb-repl
+  labels:
+    release: kube-prometheus-stack
+spec:
+  namespaceSelector:
+    matchNames:
+    - default
+  selector:
+    matchLabels:
+      app.kubernetes.io/instance: exporter
+      app.kubernetes.io/name: exporter
+  endpoints:
+    - path: /probe
+      port: metrics
+      interval: 10s
+      scrapeTimeout: 10s
+      metricRelabelings:
+        - action: replace
+          replacement: mariadb-repl-0.mariadb-repl-internal.default.svc.cluster.local
+          sourceLabels: [instance]
+          targetLabel: instance
+        - action: replace
+          replacement: mariadb-repl-0
+          sourceLabels: [target]
+          targetLabel: target
+      params:
+        target:
+          - mariadb-repl-0.mariadb-repl-internal.default.svc.cluster.local:3306
+        auth_module:
+          - client
+    - path: /probe
+      port: metrics
+      interval: 10s
+      scrapeTimeout: 10s
+      metricRelabelings:
+        - action: replace
+          replacement: mariadb-repl-1.mariadb-repl-internal.default.svc.cluster.local
+          sourceLabels: [instance]
+          targetLabel: instance
+        - action: replace
+          replacement: mariadb-repl-1
+          sourceLabels: [target]
+          targetLabel: target
+      params:
+        target:
+          - mariadb-repl-1.mariadb-repl-internal.default.svc.cluster.local:3306
+        auth_module:
+          - client
+    - path: /probe
+      port: metrics
+      interval: 10s
+      scrapeTimeout: 10s
+      metricRelabelings:
+        - action: replace
+          replacement: mariadb-repl-2.mariadb-repl-internal.default.svc.cluster.local
+          sourceLabels: [instance]
+          targetLabel: instance
+        - action: replace
+          replacement: mariadb-repl-2
+          sourceLabels: [target]
+          targetLabel: target
+      params:
+        target:
+          - mariadb-repl-2.mariadb-repl-internal.default.svc.cluster.local:3306
+        auth_module:
+          - client

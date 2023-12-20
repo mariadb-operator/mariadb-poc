@@ -14,16 +14,17 @@ make install
 ```bash
 make monitoring-user
 make exporter
+make servicemonitor
 ```
 
-### Get metrics
+### Get metrics manually
 
-Create a port-forward in another terminal:
+Create a port-forward to the exporter in another terminal:
 ```bash
 kubectl port-forward deployment/exporter 9104:9104
 ```
-
-Curl exporter endpoints
 ```bash
 curl http://localhost:9104/probe?target=mariadb-repl-0.mariadb-repl-internal.default.svc.cluster.local:3306
+curl http://localhost:9104/probe?target=mariadb-repl-1.mariadb-repl-internal.default.svc.cluster.local:3306
+curl http://localhost:9104/probe?target=mariadb-repl-2.mariadb-repl-internal.default.svc.cluster.local:3306
 ```
