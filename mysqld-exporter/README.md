@@ -9,6 +9,12 @@ make net
 make install
 ```
 
+#### Configure MariaDB
+
+```bash
+make mariadb-repl-min
+```
+
 #### Configuration
 
 ```bash

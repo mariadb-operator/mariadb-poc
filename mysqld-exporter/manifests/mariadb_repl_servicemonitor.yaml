@@ -29,8 +29,9 @@ spec:
       params:
         target:
           - mariadb-repl-0.mariadb-repl-internal.default.svc.cluster.local:3306
-        auth_module:
-          - client
+        # optional
+        # auth_module:
+        #   - client
     - path: /probe
       port: metrics
       interval: 10s
@@ -47,8 +48,9 @@ spec:
       params:
         target:
           - mariadb-repl-1.mariadb-repl-internal.default.svc.cluster.local:3306
-        auth_module:
-          - client
+        # optional
+        # auth_module:
+        #   - client
     - path: /probe
       port: metrics
       interval: 10s
@@ -65,5 +67,6 @@ spec:
       params:
         target:
           - mariadb-repl-2.mariadb-repl-internal.default.svc.cluster.local:3306
-        auth_module:
-          - client
+        # optional
+        # auth_module:
+        #   - client
