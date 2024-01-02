@@ -1,0 +1,56 @@
+apiVersion: apps/v1
+kind: Deployment
+metadata:
+  name: maxscale-conn
+spec:
+  selector:
+    matchLabels:
+      app.kubernetes.io/instance: maxscale-conn
+      app.kubernetes.io/name: maxscale-conn
+  template:
+    metadata:
+      labels:
+        app.kubernetes.io/instance: maxscale-conn
+        app.kubernetes.io/name: maxscale-conn
+    spec:
+      containers:
+        - name: maxscale
+          image: mariadb/maxscale:23.08
+          command: 
+            - maxscale
+          args:
+            - --config
+            - /etc/config/conn.cnf
+            - -dU
+            - maxscale
+            - -l
+            - stdout
+          ports:
+            - name: write
+              containerPort: 3306
+            - name: read
+              containerPort: 3307
+            - name: gui
+              containerPort: 8989
+          livenessProbe:
+            httpGet:
+              path: /
+              port: 8989
+          readinessProbe:
+            httpGet:
+              path: /
+              port: 8989
+          resources:
+            requests:
+              cpu: 50m
+              memory: 64Mi
+            limits:
+              cpu: 300m
+              memory: 512Mi
+          volumeMounts:
+            - name: config
+              mountPath: /etc/config
+      volumes:
+        - name: config
+          secret:
+            secretName: config

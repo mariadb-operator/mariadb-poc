@@ -15,8 +15,14 @@ make install
 make mariadb-repl
 ```
 
-#### Configuration
+#### Connection based routing
 
 ```bash
-make users
+make conn
+```
+
+#### Read write split
+
+```bash
+make rw-split
 ```

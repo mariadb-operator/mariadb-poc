@@ -35,24 +35,20 @@ monitor-user: cluster-ctx ## Configure monitor user.
 .PHONY: users
 users: maxscale-user client-user monitor-user ## Configure users
 
-.PHONY: conn-config 
-conn-config: cluster-ctx ## Create connection configuration.
-	$(KUBECTL) create secret generic conn-config \
+.PHONY: config
+config: ## Create config Secret
+	$(KUBECTL) create secret generic config \
 		--from-file=config/conn.cnf \
-		--dry-run=client -o yaml | $(KUBECTL) apply -f -
-
-.PHONY: rw-split-config
-rw-split-config: cluster-ctx ## Create read-write split configuration.
-	$(KUBECTL) create secret generic rw-split-config \
 		--from-file=config/rw-split.cnf \
 		--dry-run=client -o yaml | $(KUBECTL) apply -f -
 
-.PHONY: config
-config: conn-config rw-split-config
-
 .PHONY: conn
-conn: conn-config ## Deploy connection PoC.
+conn: config ## Deploy connection PoC.
 	$(KUBECTL) apply -f manifests/conn
+
+.PHONY: rw-split
+rw-split: config ## Deploy rw-split PoC.
+	$(KUBECTL) apply -f manifests/rw-split
 
 include ../make/base.mk
 include ../make/deploy.mk
