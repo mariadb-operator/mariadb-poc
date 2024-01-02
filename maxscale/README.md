@@ -18,6 +18,5 @@ make mariadb-repl
 #### Configuration
 
 ```bash
-make maxscale-user
-make client-user
+make users
 ```

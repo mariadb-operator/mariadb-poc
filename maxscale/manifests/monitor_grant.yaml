@@ -1,0 +1,17 @@
+apiVersion: mariadb.mmontes.io/v1alpha1
+kind: Grant
+metadata:
+  name: monitor
+spec:
+  mariaDbRef:
+    name: mariadb-repl
+  privileges:
+    - "REPLICATION CLIENT"
+    - "SUPER"
+    - "RELOAD"
+  database: "*"
+  table: "*"
+  username: monitor
+  grantOption: false
+  host: "%"
+  retryInterval: 5s
