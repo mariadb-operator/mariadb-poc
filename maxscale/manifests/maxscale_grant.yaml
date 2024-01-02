@@ -7,7 +7,7 @@ spec:
     name: mariadb-repl
   privileges:
     - "SELECT"
-  database: "mysql"
+  database: "*" # TODO: restrict based on: https://mariadb.com/kb/en/mariadb-maxscale-2308-setting-up-mariadb-maxscale/#creating-a-user-account-for-maxscale
   table: "*"
   username: maxscale
   grantOption: false

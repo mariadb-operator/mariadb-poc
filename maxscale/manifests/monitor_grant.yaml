@@ -9,6 +9,7 @@ spec:
     - "REPLICATION CLIENT"
     - "SUPER"
     - "RELOAD"
+    - "SLAVE MONITOR"
   database: "*"
   table: "*"
   username: monitor
