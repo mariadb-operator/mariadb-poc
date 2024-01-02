@@ -38,17 +38,17 @@ install-prometheus: cluster-ctx ## Install kube-prometheus-stack helm chart.
 CERT_MANAGER_VERSION ?= "v1.9.1"
 .PHONY: install-cert-manager
 install-cert-manager: cluster-ctx ## Install cert-manager helm chart.
-	@$(ROOT_DIR)/hack/install_cert_manager.sh
+	@CERT_MANAGER_VERSION=$(CERT_MANAGER_VERSION) $(ROOT_DIR)/hack/install_cert_manager.sh
 
 METALLB_VERSION ?= "0.13.9"
 .PHONY: install-metallb
 install-metallb: cluster-ctx ## Install metallb helm chart.
-	@$(ROOT_DIR)/hack/install_metallb.sh
+	@METALLB_VERSION=$(METALLB_VERSION) $(ROOT_DIR)/hack/install_metallb.sh
 
-MARIADB_OPERATOR_VERSION ?= "0.0.23"
+MARIADB_OPERATOR_VERSION ?= "0.24.0"
 .PHONY: install-mariadb-operator
 install-mariadb-operator: cluster-ctx ## Installs mariadb-operator.
-	@$(ROOT_DIR)/hack/install_mariadb_operator.sh
+	@MARIADB_OPERATOR_VERSION=$(MARIADB_OPERATOR_VERSION) $(ROOT_DIR)/hack/install_mariadb_operator.sh
 
 .PHONY: install
 install: cluster-ctx install-prometheus install-cert-manager install-mariadb-operator ## Install dependencies.

@@ -23,3 +23,7 @@ grafana:
         gnetId: 14057
         revision: 1
         datasource: Prometheus
+
+prometheus:
+  prometheusSpec:
+    serviceMonitorSelectorNilUsesHelmValues: false

@@ -4,7 +4,7 @@ set -eo pipefail
 
 CONFIG="$( dirname "${BASH_SOURCE[0]}" )"/config
 if [ -z "$MARIADB_OPERATOR_VERSION" ]; then 
-  MARIADB_OPERATOR_VERSION="0.23.1"
+  MARIADB_OPERATOR_VERSION="0.24.0"
 fi
 
 helm repo add mariadb-operator https://mariadb-operator.github.io/mariadb-operator

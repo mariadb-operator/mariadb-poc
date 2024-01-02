@@ -27,17 +27,6 @@ spec:
     annotations:
       metallb.universe.tf/loadBalancerIPs: 172.18.0.131
 
-  affinity:
-    podAntiAffinity:
-      requiredDuringSchedulingIgnoredDuringExecution:
-        - topologyKey: "kubernetes.io/hostname"
-
-  podDisruptionBudget:
-    maxUnavailable: 66%
-
-  updateStrategy:
-    type: RollingUpdate
-
   myCnf: |
     [mariadb]
     bind-address=*
@@ -47,11 +36,7 @@ spec:
     max_allowed_packet=256M
 
   metrics:
-    exporter:
-      image: prom/mysqld-exporter:v0.14.0
-      port: 9104
-    serviceMonitor:
-      prometheusRelease: kube-prometheus-stack
+    enabled: true
 
   volumeClaimTemplate:
     resources:
