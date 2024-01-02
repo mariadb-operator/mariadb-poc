@@ -1,0 +1,12 @@
+[Splitter-Service]
+type=service
+router=readwritesplit
+servers=mariadb-repl-0,mariadb-repl-1,mariadb-repl-2
+user=maxscale
+password=MariaDB11!
+
+[Splitter-Listener]
+type=listener
+service=Splitter-Service
+protocol=MariaDBClient
+port=3306
