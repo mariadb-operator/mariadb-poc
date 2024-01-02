@@ -22,6 +22,11 @@ maxscale-user: cluster-ctx ## Configure maxscale user.
 	$(KUBECTL) apply -f ./manifests/maxscale_user.yaml
 	$(KUBECTL) apply -f ./manifests/maxscale_grant.yaml
 
+.PHONY: client-user
+client-user: cluster-ctx ## Configure client user.
+	$(KUBECTL) apply -f ./manifests/client_user.yaml
+	$(KUBECTL) apply -f ./manifests/client_grant.yaml
+
 include ../make/base.mk
 include ../make/deploy.mk
 include ../make/deps.mk
