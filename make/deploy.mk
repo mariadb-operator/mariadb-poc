@@ -57,6 +57,10 @@ install: cluster-ctx install-prometheus install-cert-manager install-mariadb-ope
 mariadb-config: ## Install MariaDB configuration.
 	$(KUBECTL) apply -f $(ROOT_DIR)/hack/manifests/mariadb/config
 
+.PHONY: mariadb
+mariadb: mariadb-config ## Install MariaDB.
+	$(KUBECTL) apply -f $(ROOT_DIR)/hack/manifests/mariadb/mariadb.yaml
+
 .PHONY: mariadb-repl
 mariadb-repl: mariadb-config ## Install MariaDB with asynchronous replication.
 	$(KUBECTL) apply -f $(ROOT_DIR)/hack/manifests/mariadb/mariadb_repl.yaml
