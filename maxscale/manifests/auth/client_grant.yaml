@@ -14,5 +14,7 @@ spec:
   table: "*"
   username: client
   grantOption: false
-  host: maxscale.default.svc.cluster.local
+  # TODO: restrict host to: maxscale-conn.default.svc.cluster.local. Getting this warning
+  # [Warning] 'user' entry 'client@maxscale-conn.default.svc.cluster.local' ignored in --skip-name-resolve mode.
+  host: "%" 
   retryInterval: 5s

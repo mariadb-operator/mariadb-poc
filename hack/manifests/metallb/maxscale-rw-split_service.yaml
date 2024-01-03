@@ -5,7 +5,10 @@ metadata:
   labels:
     app.kubernetes.io/instance: maxscale-rw-split
     app.kubernetes.io/name: maxscale-rw-split
+  annotations:
+    metallb.universe.tf/loadBalancerIPs: $CIDR_PREFIX.0.201
 spec:
+  type: LoadBalancer
   selector:
     app.kubernetes.io/instance: maxscale-rw-split
     app.kubernetes.io/name: maxscale-rw-split

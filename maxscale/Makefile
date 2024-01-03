@@ -42,6 +42,10 @@ config: ## Create config Secret
 		--from-file=config/rw-split.cnf \
 		--dry-run=client -o yaml | $(KUBECTL) apply -f -
 
+.PHONY: auth
+auth: # Create auth.
+	$(KUBECTL) apply -f manifests/auth
+
 .PHONY: conn
 conn: config ## Deploy connection PoC.
 	$(KUBECTL) apply -f manifests/conn

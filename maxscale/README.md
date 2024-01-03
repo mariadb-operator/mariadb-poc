@@ -15,6 +15,12 @@ make install
 make mariadb-repl
 ```
 
+#### Configure auth
+
+```bash
+make auth
+```
+
 #### Connection based routing
 
 ```bash
@@ -26,3 +32,8 @@ make conn
 ```bash
 make rw-split
 ```
+
+### GUI
+
+- [Conn](http://maxscale-conn.default.svc.cluster.local:8989)
+- [RW Split](http://maxscale-rw-split.default.svc.cluster.local:8989)
