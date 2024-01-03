@@ -1,0 +1,31 @@
+{
+  "data": {
+      "id": "splitter-service",
+      "type": "services",
+      "attributes": {
+          "router": "readwritesplit",
+          "parameters": {
+              "user": "maxscale",
+              "password": "MariaDB11!"
+          }
+      },
+      "relationships": {
+          "servers": {
+              "data": [
+                {
+                    "id": "mariadb-0",
+                    "type": "servers"
+                },
+                {
+                    "id": "mariadb-1",
+                    "type": "servers"
+                },
+                {
+                    "id": "mariadb-2",
+                    "type": "servers"
+                }
+              ]
+          }
+      }
+  }
+}

@@ -50,7 +50,12 @@ spec:
           volumeMounts:
             - name: config
               mountPath: /etc/config
+            - name: runtime-config
+              mountPath: /var/lib/maxscale/maxscale.cnf.d
       volumes:
         - name: config
           secret:
             secretName: config
+        - name: runtime-config
+          persistentVolumeClaim:
+            claimName: maxscale-api-runtime-config

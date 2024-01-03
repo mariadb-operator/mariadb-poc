@@ -1,0 +1,33 @@
+{
+    "data": {
+        "id": "replication-monitor",
+        "type": "monitors",
+        "attributes": {
+            "module": "mariadbmon",
+            "parameters": {
+                "user": "monitor",
+                "password": "MariaDB11!",
+                "monitor_interval": "2000ms",
+                "cooperative_monitoring_locks": "majority_of_all"
+            }
+        },
+        "relationships": {
+            "servers": {
+                "data": [
+                    {
+                        "id": "mariadb-0",
+                        "type": "servers"
+                    },
+                    {
+                        "id": "mariadb-1",
+                        "type": "servers"
+                    },
+                    {
+                        "id": "mariadb-2",
+                        "type": "servers"
+                    }
+                ]
+            }
+        }
+    }
+}

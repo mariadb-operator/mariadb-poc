@@ -55,9 +55,11 @@ conn: config ## Deploy connection PoC.
 rw-split: config ## Deploy rw-split PoC.
 	$(KUBECTL) apply -f manifests/rw-split
 
+MAXSCALE_API_URL ?= http://maxscale-api.default.svc.cluster.local:8989
 .PHONY: api
 api: config ## Deploy api PoC.
 	$(KUBECTL) apply -f manifests/api
+	@MAXSCALE_API_URL=$(MAXSCALE_API_URL) ./hack/api-configure.sh
 
 include ../make/base.mk
 include ../make/deploy.mk

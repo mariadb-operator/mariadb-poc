@@ -1,0 +1,19 @@
+{
+  "data": {
+      "id": "splitter-listener",
+      "type": "listeners",
+      "attributes": {
+          "parameters": {
+              "port": 3306,
+              "protocol": "MariaDBClient"
+          }
+      },
+      "relationships": {
+          "services": {
+              "data": [
+                  {"id": "splitter-service", "type": "services"}
+              ]
+          }
+      }
+  }
+}

@@ -1,0 +1,13 @@
+{
+  "data": {
+      "id": "mariadb-1",
+      "type": "servers",
+      "attributes": {
+          "parameters": {
+              "address": "mariadb-repl-1.mariadb-repl-internal.default.svc.cluster.local",
+              "port": 3306,
+              "protocol": "MariaDBBackend"
+          }
+      }
+  }
+}
