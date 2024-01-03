@@ -40,6 +40,7 @@ config: ## Create config Secret
 	$(KUBECTL) create secret generic config \
 		--from-file=config/conn.cnf \
 		--from-file=config/rw-split.cnf \
+		--from-file=config/api.cnf \
 		--dry-run=client -o yaml | $(KUBECTL) apply -f -
 
 .PHONY: auth
@@ -53,6 +54,10 @@ conn: config ## Deploy connection PoC.
 .PHONY: rw-split
 rw-split: config ## Deploy rw-split PoC.
 	$(KUBECTL) apply -f manifests/rw-split
+
+.PHONY: api
+api: config ## Deploy api PoC.
+	$(KUBECTL) apply -f manifests/api
 
 include ../make/base.mk
 include ../make/deploy.mk

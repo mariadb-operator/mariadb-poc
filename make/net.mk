@@ -52,6 +52,7 @@ host-mariadb-galera: ## Add mariadb galera hosts to /etc/hosts.
 host-maxscale: ## Add maxscale hosts to /etc/hosts.
 	@$(ROOT_DIR)/hack/add_host.sh $(CIDR_PREFIX).0.200 maxscale-conn.default.svc.cluster.local
 	@$(ROOT_DIR)/hack/add_host.sh $(CIDR_PREFIX).0.201 maxscale-rw-split.default.svc.cluster.local
+	@$(ROOT_DIR)/hack/add_host.sh $(CIDR_PREFIX).0.202 maxscale-api.default.svc.cluster.local
 
 .PHONY: net
 net: install-metallb host-mariadb host-mariadb-test host-mariadb-repl host-mariadb-galera host-maxscale ## Configure networking for local development.

@@ -33,7 +33,14 @@ make conn
 make rw-split
 ```
 
+#### REST API
+
+```bash
+make api
+```
+
 ### GUI
 
 - [Conn](http://maxscale-conn.default.svc.cluster.local:8989)
 - [RW Split](http://maxscale-rw-split.default.svc.cluster.local:8989)
+- [API](http://maxscale-api.default.svc.cluster.local:8989)

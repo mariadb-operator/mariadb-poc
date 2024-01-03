@@ -1,0 +1,7 @@
+[maxscale]
+threads=auto
+log_debug=1
+admin_gui=true
+admin_host=0.0.0.0
+admin_port=8989
+admin_secure_gui=false
