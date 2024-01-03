@@ -38,8 +38,7 @@ make rw-split
 ```bash
 make api
 ```
-
-[<img src="https://run.pstmn.io/button.svg" alt="Run In Postman" style="width: 128px; height: 32px;">](https://god.gw.postman.com/run-collection/9776-74dfd54a-2b2b-451f-95ab-006e1d9d9998?action=collection%2Ffork&source=rip_markdown&collection-url=entityId%3D9776-74dfd54a-2b2b-451f-95ab-006e1d9d9998%26entityType%3Dcollection%26workspaceId%3Da184b7e4-b1f7-405e-b9ec-ec62ed36dd27#?env%5BMaxScale%5D=W3sia2V5IjoidXJsIiwidmFsdWUiOiJodHRwOi8vbWF4c2NhbGUtYXBpLmRlZmF1bHQuc3ZjLmNsdXN0ZXIubG9jYWw6ODk4OSIsImVuYWJsZWQiOnRydWUsInR5cGUiOiJkZWZhdWx0In1d)
+[<img src="https://run.pstmn.io/button.svg" alt="Run In Postman" style="width: 128px; height: 32px;">](https://app.getpostman.com/run-collection/9776-74dfd54a-2b2b-451f-95ab-006e1d9d9998?action=collection%2Ffork&source=rip_markdown&collection-url=entityId%3D9776-74dfd54a-2b2b-451f-95ab-006e1d9d9998%26entityType%3Dcollection%26workspaceId%3Da184b7e4-b1f7-405e-b9ec-ec62ed36dd27#?env%5BMaxScale%5D=W3sia2V5IjoidXJsIiwidmFsdWUiOiJodHRwOi8vbWF4c2NhbGUtYXBpLmRlZmF1bHQuc3ZjLmNsdXN0ZXIubG9jYWw6ODk4OSIsImVuYWJsZWQiOnRydWUsInR5cGUiOiJkZWZhdWx0Iiwic2Vzc2lvblZhbHVlIjoiaHR0cDovL21heHNjYWxlLWFwaS5kZWZhdWx0LnN2Yy5jbHVzdGVyLmxvY2FsOjg5ODkiLCJzZXNzaW9uSW5kZXgiOjB9XQ==)
 
 ### GUI
 
