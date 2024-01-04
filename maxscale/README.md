@@ -49,8 +49,14 @@ make api
 ### Automatic failover
 
 ```bash
-kubectl scale deployment mariadb-operator -n mariadb-operator --replicas=0 # this is to avoid clashing with operator failover mechanism
 POD=mariadb-repl-0 make delete-pod
+```
+
+### Execute commands
+
+```bash
+make failover
+make switchover
 ```
 
 ### GUI

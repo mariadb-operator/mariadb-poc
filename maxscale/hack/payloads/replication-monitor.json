@@ -8,6 +8,8 @@
                 "user": "monitor",
                 "password": "MariaDB11!",
                 "monitor_interval": "2000ms",
+                "auto_failover": false,
+                "auto_rejoin": false,
                 "cooperative_monitoring_locks": "majority_of_all"
             }
         },

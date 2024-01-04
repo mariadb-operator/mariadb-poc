@@ -8,17 +8,24 @@ spec:
   # See:
   # https://mariadb.com/kb/en/mariadb-maxscale-2308-configuring-the-mariadb-monitor/
   # https://mariadb.com/kb/en/mariadb-maxscale-2308-mariadb-monitor/#cluster-manipulation-grants
+  # https://mariadb.com/kb/en/mariadb-maxscale-2308-mariadb-monitor/#cluster-manipulation-operations
   privileges:
+    - "BINLOG ADMIN"
+    - "CONNECTION ADMIN"
+    - "EVENT"
+    - "PROCESS"
+    - "PROCESS"
+    - "READ_ONLY ADMIN"
     - "RELOAD"
+    - "REPLICA MONITOR"
     - "REPLICATION CLIENT"
-    - "SLAVE MONITOR"
-    - "SUPER"
-    # failover
     - "REPLICATION SLAVE ADMIN"
     - "REPLICATION SLAVE"
-    - "READ_ONLY ADMIN"
-    - "BINLOG ADMIN"
-    - "CONNECTION ADMIN" 
+    - "SELECT"
+    - "SET USER"
+    - "SHOW DATABASES"
+    - "SLAVE MONITOR"
+    - "SUPER"
   database: "*"
   table: "*"
   username: monitor

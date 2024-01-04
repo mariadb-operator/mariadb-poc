@@ -41,7 +41,23 @@ MAXSCALE_API_URL ?= http://maxscale-api.default.svc.cluster.local:8989
 .PHONY: api
 api: config ## Deploy api PoC.
 	$(KUBECTL) apply -f manifests/api
+	$(KUBECTL) wait --for=condition=available deployment maxscale-api
 	@MAXSCALE_API_URL=$(MAXSCALE_API_URL) ./hack/api-configure.sh
+
+COMMAND_PATH ?= "v1/maxscale/modules/mariadbmon/switchover?replication-monitor&mariadb-1&mariadb-0"
+.PHONY: command
+command: ## Execute a command in MaxScale
+	@MAXSCALE_API_URL="$(MAXSCALE_API_URL)" COMMAND_PATH="$(COMMAND_PATH)" ./hack/command.sh
+
+FAILOVER_COMMAND_PATH ?= "v1/maxscale/modules/mariadbmon/failover?replication-monitor"
+.PHONY: failover
+failover: ## Execute a manual failover in MaxScale
+	@MAXSCALE_API_URL=$(MAXSCALE_API_URL) COMMAND_PATH=$(FAILOVER_COMMAND_PATH) $(MAKE) command
+
+SWITCHOVER_COMMAND_PATH ?= "v1/maxscale/modules/mariadbmon/switchover?replication-monitor&mariadb-1&mariadb-0"
+.PHONY: switchover
+switchover: ## Execute a manual switchover in MaxScale
+	@MAXSCALE_API_URL=$(MAXSCALE_API_URL) COMMAND_PATH=$(SWITCHOVER_COMMAND_PATH) $(MAKE) command
 
 POD ?= mariadb-repl-0
 .PHONY: delete-pod
