@@ -50,6 +50,14 @@ MARIADB_OPERATOR_VERSION ?= "0.24.0"
 install-mariadb-operator: cluster-ctx ## Installs mariadb-operator.
 	@MARIADB_OPERATOR_VERSION=$(MARIADB_OPERATOR_VERSION) $(ROOT_DIR)/hack/install_mariadb_operator.sh
 
+.PHONY: downscale-mariadb-operator
+downscale-mariadb-operator: ## Downscale mariadb-operator to avoid clashing with its failover mechanism.
+	$(KUBECTL) scale deployment mariadb-operator -n mariadb-operator --replicas=0
+
+.PHONY: upscale-mariadb-operator
+upscale-mariadb-operator: ## Upscale back mariadb-operator.
+	$(KUBECTL) scale deployment mariadb-operator -n mariadb-operator --replicas=1
+
 .PHONY: install
 install: cluster-ctx install-prometheus install-cert-manager install-mariadb-operator ## Install dependencies.
 

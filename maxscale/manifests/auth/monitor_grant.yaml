@@ -5,11 +5,20 @@ metadata:
 spec:
   mariaDbRef:
     name: mariadb-repl
+  # See:
+  # https://mariadb.com/kb/en/mariadb-maxscale-2308-configuring-the-mariadb-monitor/
+  # https://mariadb.com/kb/en/mariadb-maxscale-2308-mariadb-monitor/#cluster-manipulation-grants
   privileges:
-    - "REPLICATION CLIENT"
-    - "SUPER"
     - "RELOAD"
+    - "REPLICATION CLIENT"
     - "SLAVE MONITOR"
+    - "SUPER"
+    # failover
+    - "REPLICATION SLAVE ADMIN"
+    - "REPLICATION SLAVE"
+    - "READ_ONLY ADMIN"
+    - "BINLOG ADMIN"
+    - "CONNECTION ADMIN" 
   database: "*"
   table: "*"
   username: monitor

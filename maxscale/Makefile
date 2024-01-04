@@ -17,23 +17,9 @@ CLUSTER ?= mxs
 
 ##@ MaxScale PoC
 
-.PHONY: maxscale-user
-maxscale-user: cluster-ctx ## Configure maxscale user.
-	$(KUBECTL) apply -f ./manifests/maxscale_user.yaml
-	$(KUBECTL) apply -f ./manifests/maxscale_grant.yaml
-
-.PHONY: client-user
-client-user: cluster-ctx ## Configure client user.
-	$(KUBECTL) apply -f ./manifests/client_user.yaml
-	$(KUBECTL) apply -f ./manifests/client_grant.yaml
-
-.PHONY: monitor-user
-monitor-user: cluster-ctx ## Configure monitor user.
-	$(KUBECTL) apply -f ./manifests/monitor_user.yaml
-	$(KUBECTL) apply -f ./manifests/monitor_grant.yaml
-
-.PHONY: users
-users: maxscale-user client-user monitor-user ## Configure users
+.PHONY: auth
+auth: # Create auth.
+	$(KUBECTL) apply -f manifests/auth
 
 .PHONY: config
 config: ## Create config Secret
@@ -42,10 +28,6 @@ config: ## Create config Secret
 		--from-file=config/rw-split.cnf \
 		--from-file=config/api.cnf \
 		--dry-run=client -o yaml | $(KUBECTL) apply -f -
-
-.PHONY: auth
-auth: # Create auth.
-	$(KUBECTL) apply -f manifests/auth
 
 .PHONY: conn
 conn: config ## Deploy connection PoC.
@@ -60,6 +42,33 @@ MAXSCALE_API_URL ?= http://maxscale-api.default.svc.cluster.local:8989
 api: config ## Deploy api PoC.
 	$(KUBECTL) apply -f manifests/api
 	@MAXSCALE_API_URL=$(MAXSCALE_API_URL) ./hack/api-configure.sh
+
+POD ?= mariadb-repl-0
+.PHONY: delete-pod
+delete-pod: downscale-mariadb-operator ## Deletes continiously a Pod to test failover.
+	@while true; do kubectl delete pod $(POD); sleep 1; done;
+
+##@ MaxScale PoC - cleanup
+
+.PHONY: config-delete
+config-delete: ## Delete config Secret
+	$(KUBECTL) delete secret config
+
+.PHONY: auth
+auth-delete: # Delete auth.
+	$(KUBECTL) delete -f manifests/auth
+
+.PHONY: conn-delete
+conn-delete: ## Undeploy connection PoC.
+	$(KUBECTL) delete -f manifests/conn
+
+.PHONY: rw-split-delete
+rw-split-delete: ## Undeploy rw-split PoC.
+	$(KUBECTL) delete -f manifests/rw-split
+
+.PHONY: api-delete
+api-delete: ## Undeploy rw-split PoC.
+	$(KUBECTL) delete -f manifests/api
 
 include ../make/base.mk
 include ../make/deploy.mk

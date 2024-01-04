@@ -31,6 +31,8 @@ servers=mariadb-0,mariadb-1,mariadb-2
 user=monitor
 password=MariaDB11!
 monitor_interval=2000ms
+auto_failover=true
+auto_rejoin=true
 
 [Splitter-Service]
 type=service
