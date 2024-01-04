@@ -79,12 +79,12 @@ mariadb-repl: mariadb-config ## Install MariaDB with asynchronous replication.
 mariadb-repl-min: mariadb-config ## Install a minimal version of MariaDB with asynchronous replication.
 	$(KUBECTL) apply -f $(ROOT_DIR)/hack/manifests/mariadb/mariadb_repl_min.yaml
 
-##@ Deploy - benchmark
-
 POD ?= mariadb-repl-0
 .PHONY: delete-pod
 delete-pod: downscale-mariadb-operator ## Continiously delete a Pod.
 	@while true; do kubectl delete pod $(POD); sleep 1; done;
+
+##@ Deploy - sysbench
 
 .PHONY: sysbench-prepare
 sysbench-prepare: ## Prepare sysbench tests.
@@ -94,8 +94,3 @@ sysbench-prepare: ## Prepare sysbench tests.
 sysbench: ## Run sysbench tests.
 	$(KUBECTL) apply -f $(ROOT_DIR)/hack/manifests/sysbench/sysbench_cronjob.yaml
 	$(KUBECTL) create job sysbench --from cronjob/sysbench
-
-.PHONY: sysbench-delete
-sysbench-delete: ## Delete sysbench tests
-	$(KUBECTL) delete -f $(ROOT_DIR)/hack/manifests/sysbench/sysbench-prepare_job.yaml
-	$(KUBECTL) delete -f $(ROOT_DIR)/hack/manifests/sysbench/sysbench_cronjob.yaml

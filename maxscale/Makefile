@@ -59,6 +59,17 @@ SWITCHOVER_COMMAND_PATH ?= "v1/maxscale/modules/mariadbmon/switchover?replicatio
 switchover: ## Execute a manual switchover in MaxScale
 	@MAXSCALE_API_URL=$(MAXSCALE_API_URL) COMMAND_PATH=$(SWITCHOVER_COMMAND_PATH) $(MAKE) command
 
+##@ MaxScale PoC - sysbench
+
+.PHONY: sysbench-mxs-prepare
+sysbench-mxs-prepare: ## Prepare sysbench tests for MaxScale.
+	$(KUBECTL) apply -f manifests/sysbench/sysbench-prepare-mxs_job.yaml
+
+.PHONY: sysbench-mxs
+sysbench-mxs:  ## Run sysbench tests for MaxScale.
+	$(KUBECTL) apply -f manifests/sysbench/sysbench-mxs_cronjob.yaml
+	$(KUBECTL) create job sysbench-mxs --from cronjob/sysbench-mxs
+
 ##@ MaxScale PoC - cleanup
 
 .PHONY: config-delete
