@@ -21,6 +21,12 @@ make mariadb-repl
 make auth
 ```
 
+## Resource configuration
+
+Take into account these considerations when configuring the following maxscale parameters:
+- [`threads`](https://mariadb.com/kb/en/mariadb-maxscale-6-mariadb-maxscale-configuration-guide/#threads): It must be set to the same value as cpu limits.
+- [`query_classifier_cache_size`](https://mariadb.com/kb/en/mariadb-maxscale-6-mariadb-maxscale-configuration-guide/#query_classifier_cache_size): It must be set to 15% of memory limits. 
+
 #### Create config
 
 ```bash

@@ -1,6 +1,7 @@
 [maxscale]
-threads=auto
-log_debug=1
+threads=1
+query_classifier_cache_size=75Mi
+log_info=1
 admin_gui=true
 admin_host=0.0.0.0
 admin_port=8989
