@@ -59,11 +59,6 @@ SWITCHOVER_COMMAND_PATH ?= "v1/maxscale/modules/mariadbmon/switchover?replicatio
 switchover: ## Execute a manual switchover in MaxScale
 	@MAXSCALE_API_URL=$(MAXSCALE_API_URL) COMMAND_PATH=$(SWITCHOVER_COMMAND_PATH) $(MAKE) command
 
-POD ?= mariadb-repl-0
-.PHONY: delete-pod
-delete-pod: downscale-mariadb-operator ## Deletes continiously a Pod to test failover.
-	@while true; do kubectl delete pod $(POD); sleep 1; done;
-
 ##@ MaxScale PoC - cleanup
 
 .PHONY: config-delete
