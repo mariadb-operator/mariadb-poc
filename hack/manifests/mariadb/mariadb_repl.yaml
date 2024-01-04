@@ -38,9 +38,17 @@ spec:
   metrics:
     enabled: true
 
+  resources:
+    requests:
+      cpu: 100m
+      memory: 128Mi
+    limits:
+      cpu: 1000m
+      memory: 1Gi
+
   volumeClaimTemplate:
     resources:
       requests:
-        storage: 1Gi
+        storage: 10Gi
     accessModes:
       - ReadWriteOnce
