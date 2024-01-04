@@ -1,0 +1,10 @@
+{
+  "data": {
+      "id": "mariadb-operator",
+      "type": "inet",
+      "attributes": {
+          "password": "mariadb",
+          "account": "admin"
+      }
+  }
+}

@@ -44,7 +44,7 @@ api: config ## Deploy api PoC.
 	$(KUBECTL) wait --for=condition=available deployment maxscale-api
 	@MAXSCALE_API_URL=$(MAXSCALE_API_URL) ./hack/api-configure.sh
 
-COMMAND_PATH ?= "v1/maxscale/modules/mariadbmon/switchover?replication-monitor&mariadb-1&mariadb-0"
+COMMAND_PATH ?= v1/maxscale/modules/mariadbmon/switchover?replication-monitor&mariadb-1&mariadb-0
 .PHONY: command
 command: ## Execute a command in MaxScale
 	@MAXSCALE_API_URL="$(MAXSCALE_API_URL)" COMMAND_PATH="$(COMMAND_PATH)" ./hack/command.sh

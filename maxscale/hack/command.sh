@@ -11,4 +11,4 @@ if [ -z "$COMMAND_PATH" ]; then
 fi
 
 echo "Executing command: $COMMAND_PATH"
-post "$COMMAND_PATH"
+post "$COMMAND_PATH" "$AUTH_HEADER"
