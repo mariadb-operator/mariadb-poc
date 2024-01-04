@@ -52,33 +52,33 @@ make api
 ```
 [<img src="https://run.pstmn.io/button.svg" alt="Run In Postman" style="width: 128px; height: 32px;">](https://www.postman.com/mariadb-operator/workspace/mariadb-operator/collection/9776-74dfd54a-2b2b-451f-95ab-006e1d9d9998?action=share&creator=9776&active-environment=9776-a841398f-204a-48c8-ac04-6f6c3bb1d268)
 
-## Sysbench
+#### Sysbench
 
 ```bash
  make sysbench-mxs-prepare
  make sysbench-mxs
 ```
 
-### Automatic failover
+#### Automatic failover
 
 ```bash
 POD=mariadb-repl-0 make delete-pod
 ```
 
-### Execute commands
+#### Execute commands
 
 ```bash
 make failover
 make switchover
 ```
 
-### GUI
+#### GUI
 
 - [Conn](http://maxscale-conn.default.svc.cluster.local:8989)
 - [RW Split](http://maxscale-rw-split.default.svc.cluster.local:8989)
 - [API](http://maxscale-api.default.svc.cluster.local:8989)
 
-### Cleanup
+#### Cleanup
 
 ```bash
 make auth-delete
