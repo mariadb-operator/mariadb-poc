@@ -5,7 +5,8 @@
       "attributes": {
           "parameters": {
               "port": 3306,
-              "protocol": "MariaDBClient"
+              "protocol": "MariaDBClient",
+              "connection_metadata":"transaction_isolation=READ-COMMITTED"
           }
       },
       "relationships": {

@@ -38,3 +38,4 @@ spec:
     binlog_format=row
     innodb_autoinc_lock_mode=2
     max_allowed_packet=256M
+    transaction_isolation=READ-COMMITTED
