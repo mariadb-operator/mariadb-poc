@@ -1,0 +1,14 @@
+apiVersion: mariadb.mmontes.io/v1alpha1
+kind: User
+metadata:
+  name: sync
+# See: https://mariadb.com/kb/en/mariadb-maxscale-2308-mariadb-maxscale-configuration-guide/#config_sync_user
+spec:
+  mariaDbRef:
+    name: mariadb-repl
+  passwordSecretKeyRef:
+    name: mariadb
+    key: password
+  maxUserConnections: 20
+  host: "%" 
+  retryInterval: 5s

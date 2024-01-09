@@ -50,9 +50,14 @@ host-mariadb-galera: ## Add mariadb galera hosts to /etc/hosts.
 
 .PHONY: host-maxscale
 host-maxscale: ## Add maxscale hosts to /etc/hosts.
+	@$(ROOT_DIR)/hack/add_host.sh $(CIDR_PREFIX).0.210 maxscale-0.maxscale-internal.default.svc.cluster.local
+	@$(ROOT_DIR)/hack/add_host.sh $(CIDR_PREFIX).0.211 maxscale-1.maxscale-internal.default.svc.cluster.local
+	@$(ROOT_DIR)/hack/add_host.sh $(CIDR_PREFIX).0.212 maxscale-2.maxscale-internal.default.svc.cluster.local
+	@$(ROOT_DIR)/hack/add_host.sh $(CIDR_PREFIX).0.213 maxscale-3.maxscale-internal.default.svc.cluster.local
 	@$(ROOT_DIR)/hack/add_host.sh $(CIDR_PREFIX).0.210 maxscale-conn.default.svc.cluster.local
-	@$(ROOT_DIR)/hack/add_host.sh $(CIDR_PREFIX).0.211 maxscale-rw-split.default.svc.cluster.local
-	@$(ROOT_DIR)/hack/add_host.sh $(CIDR_PREFIX).0.212 maxscale-api.default.svc.cluster.local
+	@$(ROOT_DIR)/hack/add_host.sh $(CIDR_PREFIX).0.214 maxscale.default.svc.cluster.local
+	@$(ROOT_DIR)/hack/add_host.sh $(CIDR_PREFIX).0.221 maxscale-rw-split.default.svc.cluster.local
+	@$(ROOT_DIR)/hack/add_host.sh $(CIDR_PREFIX).0.222 maxscale-api.default.svc.cluster.local
 
 .PHONY: net
 net: install-metallb host-mariadb host-mariadb-test host-mariadb-repl host-mariadb-galera host-maxscale ## Configure networking for local development.

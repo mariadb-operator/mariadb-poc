@@ -1,0 +1,9 @@
+[maxscale]
+threads=auto
+query_classifier_cache_size=75Mi
+log_info=1
+load_persisted_configs=true
+admin_gui=true
+admin_host=0.0.0.0
+admin_port=8989
+admin_secure_gui=false

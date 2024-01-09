@@ -1,0 +1,19 @@
+apiVersion: mariadb.mmontes.io/v1alpha1
+kind: Grant
+metadata:
+  name: sync
+# See: https://mariadb.com/kb/en/mariadb-maxscale-2308-mariadb-maxscale-configuration-guide/#config_sync_user
+spec:
+  mariaDbRef:
+    name: mariadb-repl
+  privileges:
+    - "SELECT"
+    - "INSERT"
+    - "UPDATE"
+    - "CREATE"
+  database: "mysql"
+  table: "maxscale_config"
+  username: sync
+  grantOption: false
+  host: "%" 
+  retryInterval: 5s

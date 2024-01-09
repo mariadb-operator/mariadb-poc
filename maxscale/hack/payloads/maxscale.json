@@ -1,0 +1,11 @@
+{
+  "data": {
+      "attributes": {
+          "parameters": {
+              "config_sync_cluster": "replication-monitor",
+              "config_sync_user": "sync",
+              "config_sync_password": "MariaDB11!"
+          }
+      }
+  }
+}

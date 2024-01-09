@@ -27,6 +27,7 @@ config: ## Create config Secret
 		--from-file=config/conn.cnf \
 		--from-file=config/rw-split.cnf \
 		--from-file=config/api.cnf \
+		--from-file=config/ha.cnf \
 		--dry-run=client -o yaml | $(KUBECTL) apply -f -
 
 .PHONY: conn
@@ -43,6 +44,22 @@ api: config ## Deploy api PoC.
 	$(KUBECTL) apply -f manifests/api
 	$(KUBECTL) wait --for=condition=available deployment maxscale-api
 	@MAXSCALE_API_URL=$(MAXSCALE_API_URL) ./hack/api-configure.sh
+
+MAXSCALE_0_URL ?= http://maxscale-0.maxscale-internal.default.svc.cluster.local:8989
+MAXSCALE_1_URL ?= http://maxscale-1.maxscale-internal.default.svc.cluster.local:8989
+MAXSCALE_2_URL ?= http://maxscale-2.maxscale-internal.default.svc.cluster.local:8989
+.PHONY: ha
+ha: config ## Deploy HA PoC.
+	$(KUBECTL) apply -f manifests/ha
+	$(KUBECTL) wait pods --selector app.kubernetes.io/instance=maxscale --for condition=Ready
+	@MAXSCALE_API_URL=$(MAXSCALE_0_URL) $(MAKE) ha-config
+	@MAXSCALE_API_URL=$(MAXSCALE_1_URL) $(MAKE) ha-config
+	@MAXSCALE_API_URL=$(MAXSCALE_2_URL) $(MAKE) ha-config
+
+.PHONY: ha-config
+ha-config: ## Configure HA PoC.
+	@MAXSCALE_API_URL=$(MAXSCALE_API_URL) ./hack/ha-configure.sh
+	@MAXSCALE_API_URL=$(MAXSCALE_API_URL) ./hack/ha-configure-mxs.sh
 
 COMMAND_PATH ?= v1/maxscale/modules/mariadbmon/switchover?replication-monitor&mariadb-1&mariadb-0
 .PHONY: command
