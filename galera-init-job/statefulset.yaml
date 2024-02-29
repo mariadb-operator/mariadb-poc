@@ -1,0 +1,345 @@
+apiVersion: apps/v1
+kind: StatefulSet
+metadata:
+  name: mariadb-galera
+spec:
+  persistentVolumeClaimRetentionPolicy:
+    whenDeleted: Retain
+    whenScaled: Retain
+  podManagementPolicy: Parallel
+  replicas: 3
+  revisionHistoryLimit: 10
+  selector:
+    matchLabels:
+      app.kubernetes.io/instance: mariadb-galera
+      app.kubernetes.io/name: mariadb
+  serviceName: mariadb-galera-internal
+  template:
+    metadata:
+      annotations:
+        k8s.mariadb.com/galera: ""
+        k8s.mariadb.com/mariadb: mariadb-galera
+      creationTimestamp: null
+      labels:
+        app.kubernetes.io/instance: mariadb-galera
+        app.kubernetes.io/name: mariadb
+      name: mariadb-galera
+      namespace: default
+    spec:
+      affinity: {}
+      automountServiceAccountToken: false
+      containers:
+      - env:
+        - name: MYSQL_TCP_PORT
+          value: "3306"
+        - name: MARIADB_ROOT_HOST
+          value: '%'
+        - name: MYSQL_INITDB_SKIP_TZINFO
+          value: "1"
+        - name: CLUSTER_NAME
+          value: cluster.local
+        - name: POD_NAME
+          valueFrom:
+            fieldRef:
+              apiVersion: v1
+              fieldPath: metadata.name
+        - name: POD_NAMESPACE
+          valueFrom:
+            fieldRef:
+              apiVersion: v1
+              fieldPath: metadata.namespace
+        - name: POD_IP
+          valueFrom:
+            fieldRef:
+              apiVersion: v1
+              fieldPath: status.podIP
+        - name: MARIADB_NAME
+          value: mariadb-galera
+        - name: MARIADB_ROOT_PASSWORD
+          valueFrom:
+            secretKeyRef:
+              key: root-password
+              name: mariadb
+        - name: MARIADB_DATABASE
+          value: mariadb
+        - name: MARIADB_USER
+          value: mariadb
+        - name: MARIADB_PASSWORD
+          valueFrom:
+            secretKeyRef:
+              key: password
+              name: mariadb-galera-password
+        image: mariadb:10.6
+        imagePullPolicy: IfNotPresent
+        livenessProbe:
+          failureThreshold: 3
+          httpGet:
+            path: /liveness
+            port: 5555
+            scheme: HTTP
+          initialDelaySeconds: 20
+          periodSeconds: 5
+          successThreshold: 1
+          timeoutSeconds: 5
+        name: mariadb
+        ports:
+        - containerPort: 3306
+          name: mariadb
+          protocol: TCP
+        - containerPort: 4444
+          name: cluster
+          protocol: TCP
+        - containerPort: 4567
+          name: ist
+          protocol: TCP
+        - containerPort: 4568
+          name: sst
+          protocol: TCP
+        readinessProbe:
+          failureThreshold: 3
+          httpGet:
+            path: /readiness
+            port: 5555
+            scheme: HTTP
+          initialDelaySeconds: 20
+          periodSeconds: 5
+          successThreshold: 1
+          timeoutSeconds: 5
+        resources:
+          limits:
+            memory: 1Gi
+          requests:
+            cpu: 100m
+            memory: 128Mi
+        terminationMessagePath: /dev/termination-log
+        terminationMessagePolicy: File
+        volumeMounts:
+        - mountPath: /etc/mysql/conf.d
+          name: config
+        - mountPath: /var/lib/mysql
+          name: storage
+        - mountPath: /var/run/secrets/kubernetes.io/serviceaccount
+          name: serviceaccount
+        - mountPath: /etc/mysql/mariadb.conf.d
+          name: galera
+      - args:
+        - agent
+        - --addr=:5555
+        - --config-dir=/etc/mysql/mariadb.conf.d
+        - --state-dir=/var/lib/mysql
+        - --graceful-shutdown-timeout=1s
+        - --recovery-timeout=3m0s
+        - --kubernetes-auth
+        - --kubernetes-trusted-name=mariadb-operator
+        - --kubernetes-trusted-namespace=default
+        env:
+        - name: MYSQL_TCP_PORT
+          value: "3306"
+        - name: MARIADB_ROOT_HOST
+          value: '%'
+        - name: MYSQL_INITDB_SKIP_TZINFO
+          value: "1"
+        - name: CLUSTER_NAME
+          value: cluster.local
+        - name: POD_NAME
+          valueFrom:
+            fieldRef:
+              apiVersion: v1
+              fieldPath: metadata.name
+        - name: POD_NAMESPACE
+          valueFrom:
+            fieldRef:
+              apiVersion: v1
+              fieldPath: metadata.namespace
+        - name: POD_IP
+          valueFrom:
+            fieldRef:
+              apiVersion: v1
+              fieldPath: status.podIP
+        - name: MARIADB_NAME
+          value: mariadb-galera
+        - name: MARIADB_ROOT_PASSWORD
+          valueFrom:
+            secretKeyRef:
+              key: root-password
+              name: mariadb
+        - name: MARIADB_DATABASE
+          value: mariadb
+        - name: MARIADB_USER
+          value: mariadb
+        - name: MARIADB_PASSWORD
+          valueFrom:
+            secretKeyRef:
+              key: password
+              name: mariadb-galera-password
+        image: ghcr.io/mariadb-operator/mariadb-operator:v0.0.26
+        imagePullPolicy: IfNotPresent
+        livenessProbe:
+          failureThreshold: 3
+          httpGet:
+            path: /health
+            port: 5555
+            scheme: HTTP
+          periodSeconds: 10
+          successThreshold: 1
+          timeoutSeconds: 1
+        name: agent
+        ports:
+        - containerPort: 5555
+          name: agent
+          protocol: TCP
+        readinessProbe:
+          failureThreshold: 3
+          httpGet:
+            path: /health
+            port: 5555
+            scheme: HTTP
+          periodSeconds: 10
+          successThreshold: 1
+          timeoutSeconds: 1
+        resources: {}
+        securityContext:
+          runAsUser: 0
+        terminationMessagePath: /dev/termination-log
+        terminationMessagePolicy: File
+        volumeMounts:
+        - mountPath: /etc/mysql/conf.d
+          name: config
+        - mountPath: /var/lib/mysql
+          name: storage
+        - mountPath: /var/run/secrets/kubernetes.io/serviceaccount
+          name: serviceaccount
+        - mountPath: /etc/mysql/mariadb.conf.d
+          name: galera
+      dnsPolicy: ClusterFirst
+      initContainers:
+      - args:
+        - init
+        - --config-dir=/etc/mysql/mariadb.conf.d
+        - --state-dir=/var/lib/mysql
+        env:
+        - name: MYSQL_TCP_PORT
+          value: "3306"
+        - name: MARIADB_ROOT_HOST
+          value: '%'
+        - name: MYSQL_INITDB_SKIP_TZINFO
+          value: "1"
+        - name: CLUSTER_NAME
+          value: cluster.local
+        - name: POD_NAME
+          valueFrom:
+            fieldRef:
+              apiVersion: v1
+              fieldPath: metadata.name
+        - name: POD_NAMESPACE
+          valueFrom:
+            fieldRef:
+              apiVersion: v1
+              fieldPath: metadata.namespace
+        - name: POD_IP
+          valueFrom:
+            fieldRef:
+              apiVersion: v1
+              fieldPath: status.podIP
+        - name: MARIADB_NAME
+          value: mariadb-galera
+        - name: MARIADB_ROOT_PASSWORD
+          valueFrom:
+            secretKeyRef:
+              key: root-password
+              name: mariadb
+        - name: MARIADB_DATABASE
+          value: mariadb
+        - name: MARIADB_USER
+          value: mariadb
+        - name: MARIADB_PASSWORD
+          valueFrom:
+            secretKeyRef:
+              key: password
+              name: mariadb-galera-password
+        image: ghcr.io/mariadb-operator/mariadb-operator:v0.0.26
+        imagePullPolicy: IfNotPresent
+        name: init
+        resources: {}
+        terminationMessagePath: /dev/termination-log
+        terminationMessagePolicy: File
+        volumeMounts:
+        - mountPath: /etc/mysql/conf.d
+          name: config
+        - mountPath: /var/lib/mysql
+          name: storage
+        - mountPath: /var/run/secrets/kubernetes.io/serviceaccount
+          name: serviceaccount
+        - mountPath: /etc/mysql/mariadb.conf.d
+          name: galera
+      restartPolicy: Always
+      schedulerName: default-scheduler
+      securityContext: {}
+      serviceAccountName: default
+      terminationGracePeriodSeconds: 30
+      tolerations:
+      - effect: NoSchedule
+        key: k8s.mariadb.com/ha
+        operator: Exists
+      volumes:
+      - configMap:
+          defaultMode: 420
+          items:
+          - key: my.cnf
+            path: my.cnf
+          name: mariadb-galera-config
+        name: config
+      - name: serviceaccount
+        projected:
+          defaultMode: 420
+          sources:
+          - serviceAccountToken:
+              expirationSeconds: 3600
+              path: token
+          - configMap:
+              items:
+              - key: ca.crt
+                path: ca.crt
+              name: kube-root-ca.crt
+          - downwardAPI:
+              items:
+              - fieldRef:
+                  apiVersion: v1
+                  fieldPath: metadata.namespace
+                path: namespace
+  updateStrategy:
+    type: RollingUpdate
+  volumeClaimTemplates:
+  - apiVersion: v1
+    kind: PersistentVolumeClaim
+    metadata:
+      creationTimestamp: null
+      labels:
+        pvc.k8s.mariadb.com/role: storage
+      name: storage
+    spec:
+      accessModes:
+      - ReadWriteOnce
+      resources:
+        requests:
+          storage: 1Gi
+      storageClassName: standard
+      volumeMode: Filesystem
+    status:
+      phase: Pending
+  - apiVersion: v1
+    kind: PersistentVolumeClaim
+    metadata:
+      creationTimestamp: null
+      labels:
+        pvc.k8s.mariadb.com/role: config
+      name: galera
+    spec:
+      accessModes:
+      - ReadWriteOnce
+      resources:
+        requests:
+          storage: 300Mi
+      volumeMode: Filesystem
+    status:
+      phase: Pending

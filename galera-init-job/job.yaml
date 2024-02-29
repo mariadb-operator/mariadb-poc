@@ -1,0 +1,89 @@
+apiVersion: batch/v1
+kind: Job
+metadata:
+  name: mariadb-galera-init
+spec:
+  backoffLimit: 5
+  completionMode: NonIndexed
+  completions: 1
+  parallelism: 1
+  suspend: false
+  template:
+    spec:
+      affinity: {}
+      containers:
+      - name: init
+        command:
+        - bash
+        - "-c"
+        - "/init/entrypoint.sh"
+        env:
+        - name: MARIADB_OPERATOR_USER
+          value: root
+        - name: MARIADB_OPERATOR_PASSWORD
+          valueFrom:
+            secretKeyRef:
+              key: root-password
+              name: mariadb
+        - name: MYSQL_TCP_PORT
+          value: "3306"
+        - name: MARIADB_ROOT_HOST
+          value: '%'
+        - name: MYSQL_INITDB_SKIP_TZINFO
+          value: "1"
+        - name: CLUSTER_NAME
+          value: cluster.local
+        - name: POD_NAME
+          valueFrom:
+            fieldRef:
+              apiVersion: v1
+              fieldPath: metadata.name
+        - name: POD_NAMESPACE
+          valueFrom:
+            fieldRef:
+              apiVersion: v1
+              fieldPath: metadata.namespace
+        - name: POD_IP
+          valueFrom:
+            fieldRef:
+              apiVersion: v1
+              fieldPath: status.podIP
+        - name: MARIADB_NAME
+          value: mariadb-galera
+        - name: MARIADB_ROOT_PASSWORD
+          valueFrom:
+            secretKeyRef:
+              key: root-password
+              name: mariadb
+        - name: MARIADB_DATABASE
+          value: mariadb
+        - name: MARIADB_USER
+          value: mariadb
+        - name: MARIADB_PASSWORD
+          valueFrom:
+            secretKeyRef:
+              key: password
+              name: mariadb-galera-password
+        image: mariadb:10.6
+        imagePullPolicy: IfNotPresent
+        resources:
+          limits:
+            cpu: 300m
+            memory: 512Mi
+          requests:
+            cpu: 100m
+            memory: 128Mi
+        volumeMounts:
+        - mountPath: /var/lib/mysql
+          name: storage
+        - mountPath: /init
+          name: entrypoint
+      restartPolicy: OnFailure
+      volumes:
+      - name: storage
+        persistentVolumeClaim:
+          claimName: storage-mariadb-galera-0
+      - name: entrypoint
+        configMap:
+          name: entrypoint
+          defaultMode: 0777

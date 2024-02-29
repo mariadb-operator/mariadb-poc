@@ -1,0 +1,15 @@
+apiVersion: v1
+kind: PersistentVolumeClaim
+metadata:
+  name: storage-mariadb-galera-0
+  labels:
+    app.kubernetes.io/instance: mariadb-galera
+    app.kubernetes.io/name: mariadb
+    pvc.k8s.mariadb.com/role: storage
+spec:
+  accessModes:
+  - ReadWriteOnce
+  resources:
+    requests:
+      storage: 1Gi
+  storageClassName: standard
