@@ -17,6 +17,10 @@ CLUSTER ?= mxs
 
 ##@ MariaDB TLS PoC
 
+.PHONY: deploy
+deploy: pki kubectl # Deploy Poc.
+	$(KUBECTL) apply -f manifests/
+
 include ../make/base.mk
 include ../make/deploy.mk
 include ../make/deps.mk

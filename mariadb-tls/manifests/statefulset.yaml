@@ -2,90 +2,23 @@ apiVersion: apps/v1
 kind: StatefulSet
 metadata:
   labels:
-    app.kubernetes.io/component: database
     app.kubernetes.io/instance: mariadb
     app.kubernetes.io/name: mariadb
   name: mariadb
 spec:
-  replicas: 3
   selector:
     matchLabels:
-      app.kubernetes.io/component: database
       app.kubernetes.io/instance: mariadb
       app.kubernetes.io/name: mariadb
-  serviceName: mariadb-headless
-  podManagementPolicy: Parallel
+  serviceName: mariadb-internal
   template:
     metadata:
       labels:
-        app.kubernetes.io/component: database
         app.kubernetes.io/instance: mariadb
         app.kubernetes.io/name: mariadb
       name: mariadb
     spec:
-      serviceAccountName: mariadb
-      shareProcessNamespace: true
-      affinity:
-        podAntiAffinity:
-          requiredDuringSchedulingIgnoredDuringExecution:
-            - topologyKey: "kubernetes.io/hostname"
-      tolerations:
-        - key: "mariadb.mmontes.io/ha"
-          operator: "Exists"
-          effect: "NoSchedule"
-      initContainers:
-        - name: mariadb-init
-          image: nicolaka/netshoot:v0.7
-          imagePullPolicy: IfNotPresent
-          command:
-            - bash
-            - -c
-            - /scripts/init.sh
-          env:
-            - name: MARIADB_ROOT_PASSWORD
-              value: mariadb
-            - name: POD_NAMESPACE
-              valueFrom:
-                fieldRef:
-                  fieldPath: metadata.namespace
-            - name: CLUSTER
-              value: cluster.local
-          volumeMounts:
-            - mountPath: /etc/mysql/mariadb.conf.d
-              name: config
-            - mountPath: /var/lib/mysql
-              name: storage
-            - mountPath: /scripts
-              name: scripts
       containers:
-        - name: config-reloader-sidecar
-          image: mmontes11/config-reloader-sidecar:v0.0.1
-          env:
-            - name: CONFIG_DIR
-              value: /etc/mysql/mariadb.conf.d
-            - name: PROCESS_NAME
-              value: mariadbd
-            - name: RELOAD_SIGNAL
-              value: SIGTERM
-          volumeMounts:
-            - mountPath: /etc/mysql/mariadb.conf.d
-              name: config
-        - name: agent
-          image: nicolaka/netshoot:v0.7
-          imagePullPolicy: IfNotPresent
-          command:
-            - sleep
-            - infinity
-          env:
-            - name: MYSQL_TCP_PORT
-              value: "3306"
-            - name: MARIADB_ROOT_PASSWORD
-              value: mariadb
-          volumeMounts:
-            - mountPath: /etc/mysql/mariadb.conf.d
-              name: config
-            - mountPath: /var/lib/mysql
-              name: storage
         - name: mariadb
           image: mariadb:10.11.3
           imagePullPolicy: IfNotPresent
@@ -102,36 +35,8 @@ spec:
               value: mariadb
             - name: MARIADB_PASSWORD
               value: mariadb
-          livenessProbe:
-            exec:
-              command:
-                - bash
-                - -c
-                - mysql -u root -p${MARIADB_ROOT_PASSWORD} -e "SHOW STATUS LIKE 'wsrep_ready'" | grep -c ON
-            initialDelaySeconds: 60
-            periodSeconds: 10
-            timeoutSeconds: 1
-            successThreshold: 1
-            failureThreshold: 3
-          readinessProbe:
-            exec:
-              command:
-                - bash
-                - -ec
-                - mysql -u root -p${MARIADB_ROOT_PASSWORD} -e "SELECT 1;"
-            initialDelaySeconds: 60
-            periodSeconds: 10
-            timeoutSeconds: 1
-            successThreshold: 1
-            failureThreshold: 3
           ports:
             - containerPort: 3306
-              protocol: TCP
-            - containerPort: 4444
-              protocol: TCP
-            - containerPort: 4567
-              protocol: TCP
-            - containerPort: 4568
               protocol: TCP
           resources:
             limits:
@@ -143,31 +48,45 @@ spec:
           volumeMounts:
             - mountPath: /var/lib/mysql
               name: storage
-            - mountPath: /etc/mysql/mariadb.conf.d
-              name: config
-            - mountPath: /scripts
-              name: scripts
+            - mountPath: /etc/pki
+              name: pki
       volumes:
-        - name: scripts
-          secret:
-            secretName: mariadb-scripts
-            defaultMode: 0777
+        - name: pki
+          projected:
+            sources:
+              - secret:
+                  name: server-ca
+                  items:
+                    - key: tls.crt
+                      path: server-ca.crt
+                    - key: tls.key
+                      path: server-ca.key
+              - secret:
+                  name: server
+                  items:
+                    - key: tls.crt
+                      path: server.crt
+                    - key: tls.key
+                      path: server.key
+              - secret:
+                  name: client-ca
+                  items:
+                    - key: tls.crt
+                      path: client-ca.crt
+                    - key: tls.key
+                      path: client-ca.key
+              - secret:
+                  name: client
+                  items:
+                    - key: tls.crt
+                      path: client.crt
+                    - key: tls.key
+                      path: client.key
   volumeClaimTemplates:
     - apiVersion: v1
       kind: PersistentVolumeClaim
       metadata:
         name: storage
-      spec:
-        accessModes:
-          - ReadWriteOnce
-        resources:
-          requests:
-            storage: 100Mi
-        storageClassName: standard
-    - apiVersion: v1
-      kind: PersistentVolumeClaim
-      metadata:
-        name: config
       spec:
         accessModes:
           - ReadWriteOnce
