@@ -29,7 +29,7 @@ cert: ## Generates certificate keypair.
 
 .PHONY: ca-server
 ca-server: ## Generates CA private key and certificate for server.
-	CA_CERT=$(PKI_DIR)/server-ca.crt CA_KEY=$(PKI_DIR)/server-ca.key CA_NAME=server $(MAKE) ca
+	CA_CERT=$(PKI_DIR)/server-ca.crt CA_KEY=$(PKI_DIR)/server-ca.key CA_NAME=server-ca $(MAKE) ca
 
 .PHONY: cert-server
 cert-server: ca-server ## Generates certificate keypair for server.
@@ -40,7 +40,7 @@ cert-server: ca-server ## Generates certificate keypair for server.
 
 .PHONY: ca-client
 ca-client: ## Generates CA private key and certificate for client.
-	CA_CERT=$(PKI_DIR)/client-ca.crt CA_KEY=$(PKI_DIR)/client-ca.key CA_NAME=client $(MAKE) ca
+	CA_CERT=$(PKI_DIR)/client-ca.crt CA_KEY=$(PKI_DIR)/client-ca.key CA_NAME=client-ca $(MAKE) ca
 
 .PHONY: cert-client
 cert-client: ca-client ## Generates certificate keypair for client.
@@ -48,3 +48,7 @@ cert-client: ca-client ## Generates certificate keypair for client.
 	CERT=$(PKI_DIR)/client.crt KEY=$(PKI_DIR)/client.key \
 	CERT_SUBJECT="/CN=client" CERT_ALT_NAMES="subjectAltName=DNS:client" \
 	$(MAKE) cert
+
+.PHONY: pki
+pki: cert-client cert-server ## Generates PKI Secret.
+	@$(ROOT_DIR)/hack/pki_secret.sh
