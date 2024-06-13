@@ -48,9 +48,14 @@ spec:
           volumeMounts:
             - mountPath: /var/lib/mysql
               name: storage
+            - mountPath: /etc/mysql/mariadb.conf.d
+              name: mycnf
             - mountPath: /etc/pki
               name: pki
       volumes:
+        - name: mycnf
+          configMap:
+            name: mycnf
         - name: pki
           projected:
             sources:
