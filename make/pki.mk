@@ -35,7 +35,7 @@ ca-server: ## Generates CA private key and certificate for server.
 cert-server: ca-server ## Generates certificate keypair for server.
 	CA_CERT=$(PKI_DIR)/server-ca.crt CA_KEY=$(PKI_DIR)/server-ca.key \
 	CERT=$(PKI_DIR)/server.crt KEY=$(PKI_DIR)/server.key \
-	CERT_SUBJECT="/CN=mariadb.svc.cluster.local" CERT_ALT_NAMES="subjectAltName=DNS:mariadb.svc,DNS:mariadb" \
+	CERT_SUBJECT="/CN=mariadb.svc.cluster.local" CERT_ALT_NAMES="subjectAltName=DNS:mariadb.svc,DNS:mariadb,IP:172.18.0.20,IP:127.0.0.1" \
 	$(MAKE) cert
 
 .PHONY: ca-client
