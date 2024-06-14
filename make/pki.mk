@@ -1,6 +1,7 @@
 ##@ PKI
 
 PKI_DIR ?= /tmp/pki
+CA_DIR ?= $(PKI_DIR)/ca
 
 CA_CERT ?= $(PKI_DIR)/ca.crt
 CA_KEY ?= $(PKI_DIR)/ca.key
@@ -8,7 +9,7 @@ CA_NAME ?= mariadb
 .PHONY: ca
 ca: ## Generates CA private key and certificate.
 	@if [ ! -f "$(CA_CERT)" ] || [ ! -f "$(CA_KEY)" ]; then \
-		mkdir -p $(PKI_DIR); \
+		mkdir -p $(CA_DIR); \
 		openssl req -new -newkey rsa:4096 -x509 -sha256 -days 365 -nodes \
 			-subj "/CN=$(CA_NAME)" -out $(CA_CERT) -keyout $(CA_KEY); \
 	else \
@@ -29,22 +30,22 @@ cert: ## Generates certificate keypair.
 
 .PHONY: ca-server
 ca-server: ## Generates CA private key and certificate for server.
-	CA_CERT=$(PKI_DIR)/server-ca.crt CA_KEY=$(PKI_DIR)/server-ca.key CA_NAME=server-ca $(MAKE) ca
+	CA_CERT=$(CA_DIR)/server.crt CA_KEY=$(CA_DIR)/server.key CA_NAME=server-ca $(MAKE) ca
 
 .PHONY: cert-server
 cert-server: ca-server ## Generates certificate keypair for server.
-	CA_CERT=$(PKI_DIR)/server-ca.crt CA_KEY=$(PKI_DIR)/server-ca.key \
+	CA_CERT=$(CA_DIR)/server.crt CA_KEY=$(CA_DIR)/server.key \
 	CERT=$(PKI_DIR)/server.crt KEY=$(PKI_DIR)/server.key \
 	CERT_SUBJECT="/CN=mariadb.svc.cluster.local" CERT_ALT_NAMES="subjectAltName=DNS:mariadb.svc,DNS:mariadb,IP:172.18.0.20,IP:127.0.0.1" \
 	$(MAKE) cert
 
 .PHONY: ca-client
 ca-client: ## Generates CA private key and certificate for client.
-	CA_CERT=$(PKI_DIR)/client-ca.crt CA_KEY=$(PKI_DIR)/client-ca.key CA_NAME=client-ca $(MAKE) ca
+	CA_CERT=$(CA_DIR)/client.crt CA_KEY=$(CA_DIR)/client.key CA_NAME=client-ca $(MAKE) ca
 
 .PHONY: cert-client
 cert-client: ca-client ## Generates certificate keypair for client.
-	CA_CERT=$(PKI_DIR)/client-ca.crt CA_KEY=$(PKI_DIR)/client-ca.key \
+	CA_CERT=$(CA_DIR)/client.crt CA_KEY=$(CA_DIR)/client.key \
 	CERT=$(PKI_DIR)/client.crt KEY=$(PKI_DIR)/client.key \
 	CERT_SUBJECT="/CN=client" CERT_ALT_NAMES="subjectAltName=DNS:client" \
 	$(MAKE) cert

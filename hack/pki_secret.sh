@@ -1,9 +1,18 @@
 #!/bin/bash
 
-PKIS=(
-  "server-ca"
+CAS=(
   "server"
-  "client-ca"
+  "client"
+)
+for CA in "${CAS[@]}"; do
+ kubectl create secret tls $CA-ca \
+    --cert=/tmp/pki/ca/$CA.crt \
+    --key=/tmp/pki/ca/$CA.key \
+    --dry-run=client -o yaml | kubectl apply -f -
+done
+
+PKIS=(
+  "server"
   "client"
 )
 for PKI in "${PKIS[@]}"; do
