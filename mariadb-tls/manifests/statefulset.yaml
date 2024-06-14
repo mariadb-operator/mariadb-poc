@@ -76,13 +76,6 @@ spec:
                       path: server.crt
                     - key: tls.key
                       path: server.key
-              - secret:
-                  name: client
-                  items:
-                    - key: tls.crt
-                      path: client.crt
-                    - key: tls.key
-                      path: client.key
   volumeClaimTemplates:
     - apiVersion: v1
       kind: PersistentVolumeClaim
