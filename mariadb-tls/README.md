@@ -10,7 +10,7 @@ make deploy
 
 ```bash
 mariadb -u root -pmariadb -h 127.0.0.1 \
-  --ssl-ca=/tmp/pki/server-ca.crt \
+  --ssl-ca=/tmp/pki/ca/server.crt \
   --ssl-verify-server-cert
 ```
 

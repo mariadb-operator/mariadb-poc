@@ -52,20 +52,23 @@ spec:
               name: mycnf
             - mountPath: /etc/pki
               name: pki
+            - mountPath: /etc/pki/ca
+              name: ca
       volumes:
         - name: mycnf
           configMap:
             name: mycnf
+        - name: ca
+          projected:
+            sources:
+            - secret:
+                name: client-ca
+                items:
+                  - key: tls.crt
+                    path: client.crt
         - name: pki
           projected:
             sources:
-              - secret:
-                  name: server-ca
-                  items:
-                    - key: tls.crt
-                      path: server-ca.crt
-                    - key: tls.key
-                      path: server-ca.key
               - secret:
                   name: server
                   items:
@@ -73,13 +76,6 @@ spec:
                       path: server.crt
                     - key: tls.key
                       path: server.key
-              - secret:
-                  name: client-ca
-                  items:
-                    - key: tls.crt
-                      path: client-ca.crt
-                    - key: tls.key
-                      path: client-ca.key
               - secret:
                   name: client
                   items:
