@@ -7,5 +7,5 @@ data:
     [mariadb]
     ssl_cert = /etc/pki/server.crt
     ssl_key = /etc/pki/server.key
-    ssl_ca = /etc/pki/server-ca.crt
+    ssl_ca = /etc/pki/client-ca.crt
     require_secure_transport = true
