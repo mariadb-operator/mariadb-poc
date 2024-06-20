@@ -1,5 +1,7 @@
 ## MariaDB TLS
 
+Follow the sections below in order to understand how to establish TLS connections with MariaDB:
+
 ### Deployment
 
 ```bash
@@ -55,4 +57,10 @@ Note that, when attempting to log in as `john`, the following error is returned 
 ```bash
 2024-06-14  0:59:43 10 [Note] X509 issuer mismatch: should be '/CN=mycorp-ca' but is '/CN=client-ca'
 2024-06-14  0:59:43 10 [Warning] Access denied for user 'john'@'localhost' (using password: NO)
+```
+
+- Connect with the previous users providing a certificate from a Go program:
+
+```bash
+go run main.go
 ```
