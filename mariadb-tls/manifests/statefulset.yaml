@@ -50,15 +50,15 @@ spec:
               name: storage
             - mountPath: /etc/mysql/mariadb.conf.d
               name: mycnf
+            - mountPath: /etc/pki/ca
+              name: pki-ca
             - mountPath: /etc/pki
               name: pki
-            - mountPath: /etc/pki/ca
-              name: ca
       volumes:
         - name: mycnf
           configMap:
             name: mycnf
-        - name: ca
+        - name: pki-ca
           projected:
             sources:
             - secret:

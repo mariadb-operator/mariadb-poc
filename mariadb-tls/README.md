@@ -8,6 +8,12 @@ Follow the sections below in order to understand how to establish TLS connection
 make deploy
 ```
 
+### Port-forward
+
+```bash
+kubectl port-forward mariadb-0 3306:3306
+```
+
 ### One-way TLS
 
 ```bash
