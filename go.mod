@@ -1,6 +1,6 @@
 module github.com/mariadb-operator/mariadb-poc
 
-go 1.21.4
+go 1.23.1
 
 require (
 	github.com/go-sql-driver/mysql v1.6.0
