@@ -20,7 +20,7 @@ spec:
     spec:
       containers:
         - name: mariadb
-          image: mariadb:10.11.3
+          image: mariadb:11.4.3
           imagePullPolicy: IfNotPresent
           env:
             - name: MYSQL_TCP_PORT

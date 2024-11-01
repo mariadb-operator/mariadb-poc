@@ -30,16 +30,27 @@ func main() {
 	mysql.RegisterTLSConfig("mariadb", &tls.Config{
 		RootCAs:      rootCertPool,
 		Certificates: clientCert,
+		MinVersion:   tls.VersionTLS12,
 	})
 
-	db, err := sql.Open("mysql", "tom@tcp(127.0.0.1:3306)/?tls=mariadb")
+	db, err := sql.Open("mysql", "root:mariadb@tcp(127.0.0.1:3306)/?tls=mariadb")
 	if err != nil {
 		log.Fatalf("Error opening connection to database: %v", err)
 	}
-	defer db.Close()
+	if err := db.Ping(); err != nil {
+		log.Fatalf("Error pinging database: %v", err)
+	}
+	log.Println("Connected")
+
+	defer func() {
+		if err := db.Close(); err != nil {
+			log.Fatalf("Error closing connection to database: %v", err)
+		}
+		log.Println("Disconnected")
+	}()
 
 	if row := db.QueryRow("SELECT 1;"); row.Err() != nil {
 		log.Fatalf("Error querying database: %v", row.Err())
 	}
-	log.Println("Success!")
+	log.Println("Successfully run query")
 }
