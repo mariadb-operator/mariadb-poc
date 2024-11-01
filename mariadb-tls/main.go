@@ -33,7 +33,7 @@ func main() {
 		MinVersion:   tls.VersionTLS12,
 	})
 
-	db, err := sql.Open("mysql", "root:mariadb@tcp(127.0.0.1:3306)/?tls=mariadb")
+	db, err := sql.Open("mysql", "tom@tcp(127.0.0.1:3306)/?tls=mariadb")
 	if err != nil {
 		log.Fatalf("Error opening connection to database: %v", err)
 	}
