@@ -32,7 +32,7 @@ func GetBinlogMetadata(filename string) (*BinlogMetadata, error) {
 	parser := replication.NewBinlogParser()
 	parser.SetFlavor(mysql.MariaDBFlavor)
 	parser.SetVerifyChecksum(false)
-	parser.SetRawMode(false)
+	parser.SetRawMode(true) // set to false for human-redable events. It will introduce parsing overhead.
 
 	meta := BinlogMetadata{}
 	var rawGtidEvent []byte
