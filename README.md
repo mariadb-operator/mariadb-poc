@@ -6,5 +6,6 @@ MariaDB Proofs of Concept.
 - [Galera](./galera)
 - [Galera init job](./galera-init-job/)
 - [MariaDB TLS](./mariadb-tls)
+- [MariaDB binlog](./mariadb-binlog)
 - [MaxScale](./maxscale/)
 - [mysqld-exporter](./mysqld-exporter/)
