@@ -3,7 +3,6 @@ module github.com/mariadb-operator/mariadb-poc
 go 1.23.1
 
 require (
-	github.com/go-logr/logr v1.2.4
 	github.com/go-mysql-org/go-mysql v1.13.0
 	github.com/go-sql-driver/mysql v1.8.1
 	github.com/mariadb-operator/mariadb-operator v0.0.23
