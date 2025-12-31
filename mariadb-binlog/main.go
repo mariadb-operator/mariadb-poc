@@ -70,17 +70,17 @@ func GetBinlogMetadata(filename string) (*BinlogMetadata, error) {
 	return &meta, nil
 }
 
-var binlogFile = "binlogs/mariadb-repl-bin-20251231114115.000008"
+var binlogFile = "binlogs/domain_id_0/mariadb-repl-bin-20251231114115.000008"
+
+// var binlogFile = "binlogs/domain_id_1/mariadb-repl-bin-20251231125242.000002"
 
 func main() {
 	fmt.Printf("Getting binlog metadata from %s\n", binlogFile)
-
 	meta, err := GetBinlogMetadata(binlogFile)
 	if err != nil {
 		fmt.Printf("error getting binlog metadta: %v", err)
 		os.Exit(1)
 	}
-
 	fmt.Println("Got binlog metadata:")
 	fmt.Println(meta)
 }
