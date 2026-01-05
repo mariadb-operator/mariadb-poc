@@ -3,6 +3,7 @@ package main
 import (
 	"fmt"
 	"os"
+	"strings"
 	"time"
 
 	"github.com/go-mysql-org/go-mysql/mysql"
@@ -11,11 +12,15 @@ import (
 )
 
 type BinlogMetadata struct {
-	Timestamp uint32
-	LogPos    uint32
-	ServerId  uint32
-	FirstGtid *string
-	LastGtid  *string
+	ServerId       uint32
+	ServerVersion  string
+	BinlogVersion  uint16
+	LogPos         uint32
+	FirstTimestamp uint32
+	LastTimestamp  uint32
+	PreviousGtids  []string
+	FirstGtid      *string
+	LastGtid       *string
 }
 
 func (m BinlogMetadata) String() string {
@@ -30,8 +35,17 @@ func (m BinlogMetadata) String() string {
 	} else {
 		last = *m.LastGtid
 	}
-	t := time.Unix(int64(m.Timestamp), 0).UTC().Format(time.RFC3339)
-	return fmt.Sprintf("Timestamp: %s(raw:%d)\nLogPos: %d\nServerId: %d\nFirstGTID: %s\nLastGTID: %s\n", t, m.Timestamp, m.LogPos, m.ServerId, first, last)
+	firstT := time.Unix(int64(m.FirstTimestamp), 0).UTC().Format(time.RFC3339)
+	lastT := time.Unix(int64(m.LastTimestamp), 0).UTC().Format(time.RFC3339)
+	var prev string
+	if len(m.PreviousGtids) == 0 {
+		prev = "<nil>"
+	} else {
+		prev = strings.Join(m.PreviousGtids, ", ")
+	}
+	return fmt.Sprintf("ServerId: %d\nServerVersion: %s\nBinlogVersion: %d\nLogPos: %d\nFirstTimestamp: %s(raw:%d)\nLastTimestamp: %s(raw:%d)\nPreviousGTIDs: %s\nFirstGTID: %s\nLastGTID: %s\n",
+		m.ServerId, m.ServerVersion, m.BinlogVersion, m.LogPos,
+		firstT, m.FirstTimestamp, lastT, m.LastTimestamp, prev, first, last)
 }
 
 func GetBinlogMetadata(filename string) (*BinlogMetadata, error) {
@@ -42,42 +56,75 @@ func GetBinlogMetadata(filename string) (*BinlogMetadata, error) {
 
 	meta := BinlogMetadata{}
 	var (
-		firstRawGtidEvent []byte
-		lastRawGtidEvent  []byte
+		rawFormatDescriptionEvent []byte
+		rawGtidListEvent          []byte
+		firstRawGtidEvent         []byte
+		lastRawGtidEvent          []byte
 	)
 
 	err := parser.ParseFile(filename, 0, func(e *replication.BinlogEvent) error {
-		e.Dump(os.Stdout)
-		if e.Header.EventType == replication.MARIADB_GTID_EVENT {
+		// e.Dump(os.Stdout)
+		meta.LogPos = e.Header.LogPos
+		meta.ServerId = e.Header.ServerID
+
+		switch e.Header.EventType {
+		case replication.FORMAT_DESCRIPTION_EVENT:
+			rawFormatDescriptionEvent = e.RawData
+		case replication.MARIADB_GTID_LIST_EVENT:
+			rawGtidListEvent = e.RawData
+		case replication.MARIADB_GTID_EVENT:
 			if firstRawGtidEvent == nil {
 				firstRawGtidEvent = e.RawData
 			}
 			lastRawGtidEvent = e.RawData
 		}
-		meta.Timestamp = e.Header.Timestamp
-		meta.LogPos = e.Header.LogPos
-		meta.ServerId = e.Header.ServerID
+		if meta.FirstTimestamp == 0 {
+			meta.FirstTimestamp = e.Header.Timestamp
+		}
+		meta.LastTimestamp = e.Header.Timestamp
+
 		return nil
 	})
 	if err != nil {
 		return nil, fmt.Errorf("error getting binlog metadata: %v", err)
 	}
 
+	if rawFormatDescriptionEvent != nil {
+		formatDescription := &replication.FormatDescriptionEvent{}
+		if err := formatDescription.Decode(rawFormatDescriptionEvent[replication.EventHeaderSize:]); err != nil {
+			fmt.Printf("error decoding first format description event: %v", err)
+			os.Exit(1)
+		}
+		meta.ServerVersion = formatDescription.ServerVersion
+		meta.BinlogVersion = formatDescription.Version
+	}
+	if rawGtidListEvent != nil {
+		listEvent := &replication.MariadbGTIDListEvent{}
+		if err := listEvent.Decode(rawGtidListEvent[replication.EventHeaderSize:]); err != nil {
+			fmt.Printf("error decoding first GTID list event: %v", err)
+			os.Exit(1)
+		}
+		prevGtids := make([]string, len(listEvent.GTIDs))
+		for i, gtid := range listEvent.GTIDs {
+			prevGtids[i] = gtid.String()
+		}
+		meta.PreviousGtids = prevGtids
+	}
 	if firstRawGtidEvent != nil {
 		firstGtid, err := decodeGTIDEvent(firstRawGtidEvent, meta.ServerId)
 		if err != nil {
 			fmt.Printf("error decoding first GTID event: %v", err)
-		} else {
-			meta.FirstGtid = ptr.To(firstGtid.GTID.String())
+			os.Exit(1)
 		}
+		meta.FirstGtid = ptr.To(firstGtid.GTID.String())
 	}
 	if lastRawGtidEvent != nil {
 		lastGtid, err := decodeGTIDEvent(lastRawGtidEvent, meta.ServerId)
 		if err != nil {
 			fmt.Printf("error decoding last GTID event: %v", err)
-		} else {
-			meta.LastGtid = ptr.To(lastGtid.GTID.String())
+			os.Exit(1)
 		}
+		meta.LastGtid = ptr.To(lastGtid.GTID.String())
 	}
 
 	return &meta, nil
@@ -99,19 +146,30 @@ func decodeGTIDEvent(rawEvent []byte, serverId uint32) (*replication.MariadbGTID
 	return gtidEvent, nil
 }
 
-var (
-	binlogFile = "binlogs/domain_id_0/mariadb-repl-bin-20251231114115.000008"
-
-// binlogFile = "binlogs/domain_id_1/mariadb-repl-bin-20251231125242.000002"
-)
+var binlogs = []string{
+	"binlogs/domain_id_0/mariadb-repl-bin.000001",
+	"binlogs/domain_id_0/mariadb-repl-bin.000002",
+	"binlogs/domain_id_0/mariadb-repl-bin.000003",
+	"binlogs/domain_id_0/mariadb-repl-bin.000004",
+	"binlogs/domain_id_0/mariadb-repl-bin.000005",
+	"binlogs/domain_id_0/mariadb-repl-bin.000006",
+	"binlogs/domain_id_0/mariadb-repl-bin.000007",
+	"binlogs/domain_id_0/mariadb-repl-bin.000008",
+	"binlogs/domain_id_0/mariadb-repl-bin.000009",
+	"binlogs/domain_id_0/mariadb-repl-bin.000010",
+	// "binlogs/domain_id_1/mariadb-repl-bin.000001",
+	// "binlogs/domain_id_1/mariadb-repl-bin.000002",
+}
 
 func main() {
-	fmt.Printf("Getting binlog metadata from %s\n", binlogFile)
-	meta, err := GetBinlogMetadata(binlogFile)
-	if err != nil {
-		fmt.Printf("error getting binlog metadta: %v", err)
-		os.Exit(1)
+	for _, binlog := range binlogs {
+		fmt.Printf("Getting binlog metadata from %s\n", binlog)
+		meta, err := GetBinlogMetadata(binlog)
+		if err != nil {
+			fmt.Printf("error getting binlog metadata: %v", err)
+			os.Exit(1)
+		}
+		fmt.Println("Got binlog metadata:")
+		fmt.Println(meta)
 	}
-	fmt.Println("Got binlog metadata:")
-	fmt.Println(meta)
 }
