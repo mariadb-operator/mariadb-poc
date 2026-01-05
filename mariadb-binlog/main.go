@@ -21,6 +21,8 @@ type BinlogMetadata struct {
 	PreviousGtids  []string
 	FirstGtid      *string
 	LastGtid       *string
+	RotateEvent    bool
+	StopEvent      bool
 }
 
 func (m BinlogMetadata) String() string {
@@ -35,17 +37,26 @@ func (m BinlogMetadata) String() string {
 	} else {
 		last = *m.LastGtid
 	}
-	firstT := time.Unix(int64(m.FirstTimestamp), 0).UTC().Format(time.RFC3339)
-	lastT := time.Unix(int64(m.LastTimestamp), 0).UTC().Format(time.RFC3339)
+	var firstT, lastT string
+	if m.FirstTimestamp == 0 {
+		firstT = "<nil>"
+	} else {
+		firstT = time.Unix(int64(m.FirstTimestamp), 0).UTC().Format(time.RFC3339)
+	}
+	if m.LastTimestamp == 0 {
+		lastT = "<nil>"
+	} else {
+		lastT = time.Unix(int64(m.LastTimestamp), 0).UTC().Format(time.RFC3339)
+	}
 	var prev string
 	if len(m.PreviousGtids) == 0 {
 		prev = "<nil>"
 	} else {
 		prev = strings.Join(m.PreviousGtids, ", ")
 	}
-	return fmt.Sprintf("ServerId: %d\nServerVersion: %s\nBinlogVersion: %d\nLogPos: %d\nFirstTimestamp: %s(raw:%d)\nLastTimestamp: %s(raw:%d)\nPreviousGTIDs: %s\nFirstGTID: %s\nLastGTID: %s\n",
+	return fmt.Sprintf("ServerId: %d\nServerVersion: %s\nBinlogVersion: %d\nLogPos: %d\nFirstTimestamp: %s(raw:%d)\nLastTimestamp: %s(raw:%d)\nPreviousGTIDs: %s\nFirstGTID: %s\nLastGTID: %s\nRotateEvent: %t\nStopEvent: %t\n",
 		m.ServerId, m.ServerVersion, m.BinlogVersion, m.LogPos,
-		firstT, m.FirstTimestamp, lastT, m.LastTimestamp, prev, first, last)
+		firstT, m.FirstTimestamp, lastT, m.LastTimestamp, prev, first, last, m.RotateEvent, m.StopEvent)
 }
 
 func GetBinlogMetadata(filename string) (*BinlogMetadata, error) {
@@ -67,6 +78,7 @@ func GetBinlogMetadata(filename string) (*BinlogMetadata, error) {
 		meta.LogPos = e.Header.LogPos
 		meta.ServerId = e.Header.ServerID
 
+		// see: https://mariadb.com/docs/server/reference/clientserver-protocol/replication-protocol
 		switch e.Header.EventType {
 		case replication.FORMAT_DESCRIPTION_EVENT:
 			rawFormatDescriptionEvent = e.RawData
@@ -77,6 +89,10 @@ func GetBinlogMetadata(filename string) (*BinlogMetadata, error) {
 				firstRawGtidEvent = e.RawData
 			}
 			lastRawGtidEvent = e.RawData
+		case replication.ROTATE_EVENT:
+			meta.RotateEvent = true
+		case replication.STOP_EVENT:
+			meta.StopEvent = true
 		}
 		if meta.FirstTimestamp == 0 {
 			meta.FirstTimestamp = e.Header.Timestamp
