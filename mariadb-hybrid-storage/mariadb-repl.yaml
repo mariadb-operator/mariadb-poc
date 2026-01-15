@@ -1,0 +1,32 @@
+apiVersion: k8s.mariadb.com/v1alpha1
+kind: MariaDB
+metadata:
+  name: mariadb-repl
+spec:
+  rootPasswordSecretKeyRef:
+    name: mariadb
+    key: password
+  image: mariadb:11.8.5
+  storage:
+    size: 1Gi
+    storageClassName: rook-ceph # distributed storage
+  replicas: 2
+  replication:
+    enabled: true
+  # this needs to be added to schedule `mariadb-repl-1` in a node where the local storage is available
+  tolerations:
+    - effect: NoSchedule
+      key: node.mmontes.io/type
+      value: compute-large
+---
+apiVersion: v1
+kind: PersistentVolumeClaim
+metadata:
+  name: storage-mariadb-repl-1
+spec:
+  accessModes:
+  - ReadWriteOnce
+  resources:
+    requests:
+      storage: 1Gi
+  storageClassName: topolvm # local storage
